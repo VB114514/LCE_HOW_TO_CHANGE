@@ -51,6 +51,7 @@ DEF(eCreativeInventory_Materials)
   //omit hundreds of lines of code
   ITEM(Item::netheriteIngot_Id) //register netheriteIngot to eCreativeInventory_Materials
 ```
+Paste it between ITEM(Item::diamond_Id) and ITEM(Item::emerald_Id) to make it appear between Diamond and Emerald.
 
 ### Be a painter
 Old textures is boring, we need a new one!
