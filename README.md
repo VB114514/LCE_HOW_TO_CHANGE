@@ -81,7 +81,7 @@ void PreStitchedTextureMap::loadUVs()
     ADD_ICON(9,		1,	L"ingotNetherite") //column 9+1, rpw 1+1 is ingotNetherite
 ```
 
-Draw something new (16*16 texture) on items.png, replace all items.png, and see what happend!
+Draw something new (16*16 texture on grid) on items.png, replace all items.png, and see what happend!
 
 ### We need a name
 This part is somewhat difficult for you right now because it involves modifying hexadecimal files (which requires using specialized tools and understanding the purpose of each byte, making it rather complicated for beginners). After Chapter 2 explains hexadecimal editing and the format of language files, we will come back and give it a name.
