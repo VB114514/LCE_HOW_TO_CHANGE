@@ -1,7 +1,7 @@
 # LCE_HOW_TO_CHANGE
 Noob? Nevermind! This repo can teach you how to add anything!
 
-(Updating, currently at chapter one, branch is unready now, please wait...)
+(Updating, currently at chapter one)
 
 ## Before You Start
 - New code in the test branch is LLM-generated based on my ideas
