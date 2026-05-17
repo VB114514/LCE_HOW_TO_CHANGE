@@ -92,5 +92,7 @@ Draw something new (16*16 texture on grid) on items.png, replace all items.png, 
 
 ### We need a name
 This part involves hex editing `.loc` files. Don't panic. 
+
 Chapter 2 will cover hex editing basics and the language file format. 
+
 For now, your item will show its internal name in-game. We'll fix that soon.
