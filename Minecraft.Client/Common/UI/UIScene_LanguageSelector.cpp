@@ -123,7 +123,9 @@ void UIScene_LanguageSelector::handlePress(F64 controlId, F64 childId)
 
 		app.SetMinecraftLanguage(m_iPad, newLanguage);
 		app.SetMinecraftLocale(m_iPad, newLocale);
+		app.loadStringTable();
 
 		app.CheckGameSettingsChanged(true, m_iPad);
+		navigateBack();
 	}
 }

@@ -1,242 +1,242 @@
 ﻿<root>
 	<data name="IDS_TIPS_GAMETIP_NEWDLC">
-		<value>有新的可下载内容！点击主菜单上的 Minecraft Store 按钮获取该内容。</value>
+		<value>原主机版已经死了七年了你是怎么收到这个的我的妈呀这是什么鬼东西你一定是作弊了！！！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_SKINPACKS">
-		<value>您可以使用 Minecraft Store 的皮肤包改变角色形象。在主菜单上选择“Minecraft Store”查看可用的皮肤包。</value>
+		<value>骗你的，原主机版已经死了七年了，你再怎么点也没用</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_2">
-		<value>请改变伽玛设置，调整游戏亮度。</value>
+		<value>改变Gamma值设置即可调整游戏亮度</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_3">
-		<value>如果将游戏难度设置为“和平”，您的生命值将自动回复，怪物也不会在夜晚出现！</value>
+		<value>如果将难度改为和平模式，你会自动回血，怪物也会消失/value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_4">
-		<value>您可以通过喂骨头驯服狼，让它坐下或跟随您。</value>
+		<value>给狼喂骨头，你就可以获得你的布鲁斯（划掉）一只狗，可以坐下也可以跟着你，肥肠可爱</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_5">
-		<value>在“背包”菜单中，您可以将光标从菜单上移开并按{*CONTROLLER_VK_A*}来丢弃物品</value>
+		<value>打开背包时，把鼠标悬停在物品上按{*CONTROLLER_VK_A*}就可以丢物品</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_6">
-		<value>如果晚上上床睡觉，游戏会快进到黎明，但是需要多人游戏中的所有玩家全都上床睡觉。</value>
+		<value>睡觉以跳过夜晚或雷雨天，但多人游戏中需要所有玩家都睡才行</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_7">
-		<value>从猪身上收集猪排，将其煮熟吃掉以恢复生命值。</value>
+		<value>杀猪获得猪排，然后用熔炉烤了吃回血</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_8">
-		<value>从牛身上收集皮革，用来制作皮甲。</value>
+		<value>杀牛获得皮革，然后拿来做皮甲</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_9">
-		<value>如果您有空桶，请用牛奶、水或熔岩填满它！</value>
+		<value>如果你有空桶，赶紧装上水，熔岩，牛奶或是其它什么的！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_10">
-		<value>用锄头开垦种植区域。</value>
+		<value>用锄头开垦农田，然后种地，当然如果有人打扰到你种地你也可以用锄头教他们做人</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_11">
-		<value>蜘蛛不会在白天攻击您，除非您先攻击它们。</value>
+		<value>在白天蜘蛛是中立生物，你不打它们，它们就不打你！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_12">
-		<value>用铲子挖土掏沙，比用手快多了！</value>
+		<value>用铲子挖土掏沙比用手快多了！（其实……你只有量产tnt需要用这个）</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_13">
-		<value>和生吃比起来，熟猪排能恢复更多生命。</value>
+		<value>熟猪排回的血比生猪排多</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_14">
-		<value>制作一些火把，用来在夜晚点亮周围区域。怪物会避开火把附近的区域。</value>
+		<value>火把让你的家在夜晚依旧明亮，而且怪物也会退避三舍！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_15">
-		<value>使用矿车和铁轨可加速到达目的地！</value>
+		<value>使用矿车和铁轨加速到达目的地！（其实纯属胡扯，因为你需要先走过去铺铁轨）</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_16">
-		<value>种些树苗吧，它们会长成大树。</value>
+		<value>十年树木，百年树人，多种点树苗，这样你就不愁没木头！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_17">
-		<value>猪人不会攻击您，除非您先攻击它们。</value>
+		<value>僵尸猪人和蜘蛛一样是中立生物，你不打它们，它们就不打你！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_18">
-		<value>您可以改变游戏出生点，然后上床睡觉快进到黎明。</value>
+		<value>床可以改变你的重生点，然后你就可以睡一觉跳过夜晚！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_19">
-		<value>将那些火球弹回去攻击恶魂！</value>
+		<value>把火球打回去以牙还牙！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_20">
-		<value>通过建造传送门，您可以进入另一个维度：下界。</value>
+		<value>建下界传送门去下界（这不废话吗？）</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_21">
-		<value>按{*CONTROLLER_VK_B*}丢弃您手中的物品！</value>
+		<value>按{*CONTROLLER_VK_B*}丢弃手上的物品！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_22">
-		<value>请使用正确的工具！</value>
+		<value>别瞎挖了！用点匹配的吧，求你了！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_23">
-		<value>如果找不到煤块来制作火把，您随时可以用火炉将树木烧成木炭。</value>
+		<value>如果没煤炭做火把，就用熔炉把原木烧成木炭！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_24">
-		<value>一直往上或往下挖不是个好主意。</value>
+		<value>真男人挖矿法的最终结果往往是让一个又一个真男人摔死或者掉岩浆里</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_25">
-		<value>骨粉（用骨头制成）可以作为肥料使用，具有瞬间生长的效果！</value>
+		<value>骨粉可以当肥料用，效果比金坷垃还好！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_26">
-		<value>爬行者在接近您时会发生爆炸！</value>
+		<value>苦力怕靠近你之后就会跟你爆了</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_27">
-		<value>用水冲击岩浆源块会生成黑曜石。</value>
+		<value>水+岩浆源=黑曜石，记住这个，因为你可以利用这个在岩浆湖里浇筑传送门！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_28">
-		<value>源块被移除后，岩浆可能要几分钟才会完全消失。</value>
+		<value>岩浆源没了之后，残余的岩浆可能要好久才能消失</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_29">
-		<value>圆石可以抵抗恶魂火球，可用于保护传送门。</value>
+		<value>用圆石保护传送门（不这样做你的门很可能被恶魂集火）</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_30">
-		<value>作为光源使用的方块会融化冰雪，可以做成火把、萤石和灯笼等。</value>
+		<value>光源可以融化冰雪！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_31">
-		<value>在户外建造羊毛建筑物时要小心，因为雷暴引发的闪电会让羊毛着火。</value>
+		<value>用羊毛建房子不是什么好主意，因为一个闪电就可能把整个房子给点了然后烧成渣渣灰</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_32">
-		<value>可将一桶岩浆倒入熔炉熔炼成 100 个方块。</value>
+		<value>一桶岩浆可以烧100个方块！（别搞错了，你得放熔炉里，而不是直接扔！不然你会后悔的！）</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_33">
-		<value>音符盒使用的乐器取决于其下方的材料。</value>
+		<value>音符盒的音色取决于其下方的方块</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_34">
-		<value>如果僵尸和骷髅在水里，它们在日光下也可存活。</value>
+		<value>在水里的僵尸和骷髅不怕阳光！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_35">
-		<value>如果您攻击一只狼，其附近的所有狼都会转而攻击您。僵尸猪人也一样。</value>
+		<value>你打狼的话周围的狼也会一起打你，僵尸猪人也一样</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_36">
-		<value>狼无法进入下界。</value>
+		<value>狼无法进入下界</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_37">
-		<value>狼不会攻击爬行者。</value>
+		<value>狼不会攻击苦力怕</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_38">
-		<value>鸡每 5 到 10 分钟下一个蛋。</value>
+		<value>鸡每5到10分钟下一个蛋</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_39">
-		<value>黑曜石只能用钻石镐开采。</value>
+		<value>黑曜石只能用钻石镐和下界合金镐(虽然我们还没有下界合金镐)开采</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_40">
-		<value>爬行者是最容易获取的火药来源。</value>
+		<value>杀苦力怕是最快的火药获取方法之一（但是很考验身法和速度）</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_41">
-		<value>将两个箱子并排放可以合成一个大箱子。</value>
+		<value>两个箱子=一个大箱子，当然竖着堆叠可不行</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_42">
-		<value>被驯服的狼会通过尾巴的位置表明它们的生命值。给它们喂肉，可让它们恢复生命。</value>
+		<value>狗的生命值越低尾巴也越低，给它们吃肉就可以让它们恢复</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_43">
-		<value>请用熔炉煮仙人掌，以获取绿色染料。</value>
+		<value>用熔炉烧仙人掌获取绿色染料</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_46">
-		<value>请阅读“游戏指南”菜单中的“新增内容”部分，了解关于该游戏的最新更新信息。</value>
+		<value>看github，不然你甚至都不知道我们又做了什么新的史一坨！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_47">
-		<value>游戏现在有了可堆叠栅栏！</value>
+		<value>栅栏现在可以堆叠了！</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_49">
-		<value>如果您手里有小麦，一些动物会跟随着您。</value>
+		<value>如果你拿着小麦，动物们会跟着你</value>
 	</data>	
 
 	<data name="IDS_TIPS_GAMETIP_50">
-		<value>如果一只动物不能朝任何一个方向移动超过 20 个方块，它就不会消失。</value>
+		<value>如果生物不能朝任意方向移动超过20个方块，它就不会消失。</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_1">
-		<value>音乐由 C418 制作！</value>
+		<value>音乐由C418制作！</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_2">
-		<value>Notch 在 Twitter 上拥有一百多万粉丝！</value>
+		<value>Notch在X上拥有一百多万粉丝！不过他似乎吸嗨了发表了亿些不当言论（而我们可怜的仓库创建者在bilibili只有477个粉丝TAT，不过他的精神最起码正常-v-）</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_3">
-		<value>并不是所有瑞典人都是金发。有些人（比如 Mojang 公司的 Jens）的头发甚至是姜黄色的！</value>
+		<value>并不是所有瑞典人都是金发！</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_5">
-		<value>该游戏最终会提供更新的！</value>
+		<value>该游戏会一直更新！骗你的，原主机版都死了七年了，要更新也得是我们Anarchy Community Edition更</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_6">
-		<value>Notch 是谁？</value>
+		<value>Notch是谁？</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_7">
-		<value>Mojang 获得的奖项比它的员工还要多！</value>
+		<value>这个项目实在不温不火……</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_8">
-		<value>一些名人也在玩 Minecraft！</value>
+		<value>一些名人也在玩Minecraft！</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_9">
-		<value>deadmau5 喜欢玩 Minecraft！</value>
+		<value>deadmau5喜欢玩Minecraft！</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_10">
-		<value>不要总盯着 bug 不放。</value>
+		<value>如果发现bug就去github提交！</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_11">
-		<value>爬行者就是因编码 bug 而生。</value>
+		<value>不过bug也能带来有趣的东西，比如苦力怕就是我们吸嗨了的Notch把猪模型弄错了再糊上去一张叶子的贴图产生的</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_12">
-		<value>这是鸡还是鸭？</value>
+		<value>这是鸡还是鸭子？虽然mojang说是鸡，但我们也可以加鸭子（</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_13">
-		<value>您参加 Minecraft 爱好者聚会 (MineCon) 了吗？</value>
+		<value>Minecon真的超好玩的</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_14">
@@ -244,7 +244,7 @@
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_15">
-		<value>您知道 Minecraft Wiki 吗？</value>
+		<value>zh.minecraft.wiki里有很多优质内容</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_16">
@@ -252,7 +252,7 @@
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_18">
-		<value>MineCon 2013 是在美国佛罗里达州的奥兰多举行的。</value>
+		<value>MineCon 2013在美国佛罗里达州的奥兰多举行</value>
 	</data>	
 
 	<data name="IDS_TIPS_TRIVIA_19">

@@ -2,10 +2,6 @@
 #include "UI.h"
 #include "UIScene_SettingsOptionsMenu.h"
 
-#if defined(_XBOX_ONE)
-#define _ENABLE_LANGUAGE_SELECT
-#endif
-
 int UIScene_SettingsOptionsMenu::m_iDifficultySettingA[4]=
 {
 	IDS_DIFFICULTY_PEACEFUL,

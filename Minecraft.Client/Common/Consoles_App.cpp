@@ -1,4 +1,5 @@
-﻿#include "stdafx.h"
+﻿#include <cstdlib>
+#include "stdafx.h"
 #include "../../Minecraft.World/net.minecraft.world.entity.item.h"
 #include "../../Minecraft.World/net.minecraft.world.entity.player.h"
 #include "../../Minecraft.World/net.minecraft.world.level.tile.entity.h"
@@ -4418,6 +4419,7 @@ int CMinecraftApp::BannedLevelDialogReturned(void *pParam,int iPad,const C4JStor
 void CMinecraftApp::loadMediaArchive()
 {
 	wstring mediapath = L"";
+	m_languagePath = nullptr;
 
 #ifdef __PS3__
 	mediapath = L"Common\\Media\\MediaPS3.arc";
@@ -4474,31 +4476,80 @@ void CMinecraftApp::loadMediaArchive()
 		m_mediaArchive = nullptr;
 	}
 #endif
+	wstring locExternalPath = L"";
+    const char* env_var = std::getenv("MCACE_LANGUAGE_PATH");
+	if (env_var) {
+		locExternalPath = convStringToWstring(env_var);
+		MessageBoxW(NULL, locExternalPath.c_str(), L"ENV PATH", MB_OK);
+	} else {
+		MessageBoxW(NULL, L"ENV NOT SET", L"FAIL", MB_OK);
+		locExternalPath = L"Common\\Languages\\en_us.arc";
+	}
+	m_languagePath = new ArchiveFile( File(locExternalPath) );
+
 }
 
 void CMinecraftApp::loadStringTable()
 {
-#ifndef _XBOX
+    if (m_stringTable != nullptr) {
+        delete m_stringTable;
+        m_stringTable = nullptr;
+    }
 
-	if(m_stringTable!=nullptr)
-	{
-		// we need to unload the current string table, this is a reload
-		delete m_stringTable;
+	wstring iniPath = L"settings.ini";
+
+	File iniCheck(iniPath);
+	if (!iniCheck.exists()) {
+    	FILE* fDefault = _wfopen(iniPath.c_str(), L"w");
+    	if (fDefault) {
+    	    fputs("[language]\npath = en_US\n", fDefault);
+    	    fclose(fDefault);
+    	}
 	}
-	wstring localisationFile = L"languages.loc";
-	if (m_mediaArchive->hasFile(localisationFile))
-	{
-		byteArray locFile = m_mediaArchive->getFile(localisationFile);
-		m_stringTable = new StringTable(locFile.data, locFile.length);
-		delete locFile.data;
-	}
-	else
-	{
-		m_stringTable = nullptr;
-		assert(false);
-		// AHHHHHHHHH.
-	}
-#endif
+
+    wstring langFolder = L"en_US";
+
+    FILE* f = _wfopen(iniPath.c_str(), L"r");
+    if (f) {
+        char line[256];
+        while (fgets(line, sizeof(line), f)) {
+            if (strstr(line, "path = ")) {
+                char* val = strchr(line, '=') + 2;
+                val[strcspn(val, "\r\n")] = 0;
+                langFolder = convStringToWstring(val);
+                break;
+            }
+        }
+        fclose(f);
+    }
+
+    wstring locPath = L"Common\\Languages\\" + langFolder + L"\\languages.loc";
+    File locFile(locPath);
+    if (locFile.exists()) {
+        int64_t fileSize = locFile.length();
+        uint8_t* data = new uint8_t[fileSize];
+        FILE* f2 = _wfopen(locPath.c_str(), L"rb");
+        if (f2) {
+            fread(data, 1, fileSize, f2);
+            fclose(f2);
+            m_stringTable = new StringTable(data, fileSize);
+            delete[] data;
+            OutputDebugStringA("StringTable loaded from external LOC\n");
+            return;
+        }
+        delete[] data;
+    }
+
+    wstring localisationFile = L"languages.loc";
+    if (m_languagePath && m_languagePath->hasFile(localisationFile)) {
+        byteArray locFile = m_languagePath->getFile(localisationFile);
+        m_stringTable = new StringTable(locFile.data, locFile.length);
+        delete locFile.data;
+        OutputDebugStringA("StringTable loaded from ARC\n");
+    } else {
+        m_stringTable = nullptr;
+        OutputDebugStringA("StringTable not loaded\n");
+    }
 }
 
 int CMinecraftApp::PrimaryPlayerSignedOutReturned(void *pParam,int iPad,const C4JStorage::EMessageResult)

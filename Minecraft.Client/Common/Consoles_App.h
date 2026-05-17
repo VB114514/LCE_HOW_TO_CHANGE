@@ -430,8 +430,10 @@ public:
 	void loadMediaArchive();
 	void loadStringTable();
 
+
 protected:
 	ArchiveFile *m_mediaArchive;
+	ArchiveFile *m_languagePath;
 	StringTable *m_stringTable;
 
 public:

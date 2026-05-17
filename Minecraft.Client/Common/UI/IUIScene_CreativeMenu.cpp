@@ -534,6 +534,7 @@ void IUIScene_CreativeMenu::staticCtor()
 		ITEM(Item::blazeRod_Id)
 		ITEM(Item::goldNugget_Id)
 		ITEM(Item::netherwart_seeds_Id)
+		ITEM(Item::netheriteIngot_Id)
 		ITEM_AUX(Item::dye_powder_Id,1)		// Red
 		ITEM_AUX(Item::dye_powder_Id,14)	// Orange
 		ITEM_AUX(Item::dye_powder_Id,11)	// Yellow

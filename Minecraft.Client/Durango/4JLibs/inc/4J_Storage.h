@@ -1,12 +1,11 @@
 #pragma once
-using namespace std;
+#include <vector>
+//#include <xtms.h>
+class C4JStringTable;
 
-#define MAX_DISPLAYNAME_LENGTH 128 // SCE_SAVE_DATA_SUBTITLE_MAXSIZE on PS4
-#define MAX_SAVEFILENAME_LENGTH 32 // SCE_SAVE_DATA_DIRNAME_DATA_MAXSIZE
-#define USER_INDEX_ANY 0x000000FF
-#define RESULT	LONG
-
-class StringTable;
+#define MAX_DISPLAYNAME_LENGTH 128 // CELL_SAVEDATA_SYSP_SUBTITLE_SIZE on PS3
+#define MAX_DETAILS_LENGTH 128 // CELL_SAVEDATA_SYSP_SUBTITLE_SIZE on PS3
+#define MAX_SAVEFILENAME_LENGTH 32 // CELL_SAVEDATA_DIRNAME_SIZE
 
 typedef struct
 {
@@ -16,115 +15,42 @@ typedef struct
 }
 CONTAINER_METADATA;
 
-typedef struct  
+typedef struct
 {
-	wchar_t UTF16SaveFilename[MAX_SAVEFILENAME_LENGTH];
-	wchar_t UTF16SaveTitle[MAX_DISPLAYNAME_LENGTH];
+	char UTF8SaveFilename[MAX_SAVEFILENAME_LENGTH];
+	char UTF8SaveTitle[MAX_DISPLAYNAME_LENGTH];
 	CONTAINER_METADATA metaData;
 	PBYTE thumbnailData;
-	uint64	totalSize;
-	bool	needsSync;
-	//int sizeKB;
 }
-SAVE_INFO,*PSAVE_INFO;
+SAVE_INFO, * PSAVE_INFO;
 
-typedef struct  
+typedef struct
 {
 	int iSaveC;
-	int iThumbnailC;
 	PSAVE_INFO SaveInfoA;
 }
-SAVE_DETAILS,*PSAVE_DETAILS;
+SAVE_DETAILS, * PSAVE_DETAILS;
 
-class CONTENT_DATA
-{
-public:
-	int DeviceID;
-	DWORD dwContentType;
-	WCHAR wszDisplayName[256];
-	WCHAR wszProductID[64];
-	bool bTrialLicense;
-	//WCHAR szFileName[MAX_SAVEFILENAME_LENGTH];
-};
-
-typedef CONTENT_DATA XCONTENT_DATA, *PXCONTENT_DATA;
-
-typedef struct _MARKETPLACE_CONTENTOFFER_INFO
-{
-	WCHAR *wszProductID;
-	WCHAR *wszOfferName;
-	BOOL fUserHasPurchased;
-	WCHAR *wszSellText;
-	WCHAR *wszCurrencyPrice;
-	WCHAR *wszSignedOfferID;
-} MARKETPLACE_CONTENTOFFER_INFO, *PMARKETPLACE_CONTENTOFFER_INFO;
-
-typedef enum 
-{
-	XMARKETPLACE_OFFERING_TYPE_CONTENT = 0x00000002,
-	//XMARKETPLACE_OFFERING_TYPE_GAME_DEMO = 0x00000020,
-	//XMARKETPLACE_OFFERING_TYPE_GAME_TRAILER = 0x00000040,
-	XMARKETPLACE_OFFERING_TYPE_THEME = 0x00000080,
-	XMARKETPLACE_OFFERING_TYPE_TILE = 0x00000800,
-	//XMARKETPLACE_OFFERING_TYPE_ARCADE = 0x00002000,
-	//XMARKETPLACE_OFFERING_TYPE_VIDEO = 0x00004000,
-	//XMARKETPLACE_OFFERING_TYPE_CONSUMABLE = 0x00010000,
-	XMARKETPLACE_OFFERING_TYPE_AVATARITEM = 0x00100000
-} XMARKETPLACE_OFFERING_TYPE;
-
-
-
-enum eWebServiceState
-{
-	eWebService_idle,
-	eWebService_notsignedin,
-	eWebService_pending,
-	eWebService_error,
-	eWebService_busy
-};
-
-enum eTitleStorageState
-{
-	eTitleStorage_idle,
-	eTitleStorage_notsignedin,
-	eTitleStorage_pending,
-	eTitleStorage_complete,
-	eTitleStorage_readcomplete,
-	eTitleStorage_readfilelistcomplete,
-	eTitleStorage_writecomplete,
-	eTitleStorage_deletecomplete,
-	eTitleStorage_error,
-	eTitleStorage_readerror,
-	eTitleStorage_readfilelisterror,
-	eTitleStorage_writeerror,
-	eTitleStorage_deleteerror,
-	eTitleStorage_busy
-};
+typedef std::vector <PXMARKETPLACE_CONTENTOFFER_INFO> OfferDataArray;
+typedef std::vector <PXCONTENT_DATA> XContentDataArray;
+//typedef std::vector <PSAVE_DETAILS> SaveDetailsArray;
 
 // Current version of the dlc data creator
 #define CURRENT_DLC_VERSION_NUM 3
 
 class C4JStorage
 {
+
 public:
-
-	struct PROFILESETTINGS
-	{
-		int iYAxisInversion;
-		int iControllerSensitivity;
-		int iVibration;
-		bool bSwapSticks;
-	};
-
 	// Structs defined in the DLC_Creator, but added here to be used in the app
-	typedef struct  
+	typedef struct
 	{
 		unsigned int	uiFileSize;
 		DWORD			dwType;
 		DWORD			dwWchCount; // count of WCHAR in next array
 		WCHAR			wchFile[1];
 	}
-	DLC_FILE_DETAILS, *PDLC_FILE_DETAILS;
+	DLC_FILE_DETAILS, * PDLC_FILE_DETAILS;
 
 	typedef struct
 	{
@@ -132,67 +58,47 @@ public:
 		DWORD	dwWchCount; // count of WCHAR in next array;
 		WCHAR	wchData[1]; // will be an array of size dwBytes
 	}
-	DLC_FILE_PARAM, *PDLC_FILE_PARAM;
+	DLC_FILE_PARAM, * PDLC_FILE_PARAM;
 	// End of DLC_Creator structs
 
-	typedef struct  
+	typedef struct
+	{
+		WCHAR                               wchDisplayName[XCONTENT_MAX_DISPLAYNAME_LENGTH];
+		CHAR                                szFileName[XCONTENT_MAX_FILENAME_LENGTH];
+		DWORD								dwImageOffset;
+		DWORD								dwImageBytes;
+	}
+	CACHEINFOSTRUCT;
+
+	// structure to hold DLC info in TMS
+	typedef struct
 	{
 		DWORD dwVersion;
 		DWORD dwNewOffers;
 		DWORD dwTotalOffers;
 		DWORD dwInstalledTotalOffers;
-		BYTE bPadding[1024-sizeof(DWORD)*4]; // future expansion
+		BYTE bPadding[1024 - sizeof(DWORD) * 4]; // future expansion
 	}
 	DLC_TMS_DETAILS;
 
-	typedef struct  
+	enum eGTS_FileTypes
 	{
-		DWORD dwSize;
-		PBYTE pbData;
-	}
-	TMSPP_FILEDATA, *PTMSPP_FILEDATA;
-
-	enum eTMS_FILETYPEVAL
-	{
-		TMS_FILETYPE_BINARY=0,
-		TMS_FILETYPE_CONFIG=1,
-		TMS_FILETYPE_JSON=2,
-		TMS_FILETYPE_MAX,
+		eGTS_Type_Skin = 0,
+		eGTS_Type_Cape,
+		eGTS_Type_MAX
 	};
-
-	typedef struct  
-	{
-		WCHAR				wchFilename[64];
-		unsigned long		ulFileSize;
-		eTMS_FILETYPEVAL	eFileTypeVal;
-	}
-	TMSPP_FILE_DETAILS, *PTMSPP_FILE_DETAILS;
-
-	typedef struct  
-	{
-		int iCount;
-		PTMSPP_FILE_DETAILS FileDetailsA;
-	}
-	TMSPP_FILE_LIST, *PTMSPP_FILE_LIST;
-
-	typedef struct  
-	{
-		PBYTE pbData;
-		unsigned long ulFileLen;
-	}
-	SAVETRANSFER_FILE_DETAILS;
 
 	enum eGlobalStorage
 	{
 		//eGlobalStorage_GameClip=0,
-		eGlobalStorage_Title=0,
+		eGlobalStorage_Title = 0,
 		eGlobalStorage_TitleUser,
 		eGlobalStorage_Max
 	};
 
 	enum EMessageResult
 	{
-		EMessage_Undefined=0,
+		EMessage_Undefined = 0,
 		EMessage_Busy,
 		EMessage_Pending,
 		EMessage_Cancelled,
@@ -202,66 +108,61 @@ public:
 		EMessage_ResultFourthOption
 	};
 
+	enum ESaveGameControlState
+	{
+		ESaveGameControl_Idle = 0,
+		ESaveGameControl_Save,
+		ESaveGameControl_InternalRequestingDevice,
+		ESaveGameControl_InternalGetSaveName,
+		ESaveGameControl_InternalSaving,
+		ESaveGameControl_CopySave,
+		ESaveGameControl_CopyingSave,
+	};
+
 	enum ESaveGameState
 	{
-		ESaveGame_Idle=0,
-
-		ESaveGame_Save,	
-		ESaveGame_SaveCompleteSuccess,
-		ESaveGame_SaveCompleteFail,
-		ESaveGame_SaveIncomplete,
-		ESaveGame_SaveIncomplete_WaitingOnResponse,
-
-		ESaveGame_SaveSubfiles,	
-		ESaveGame_SaveSubfilesCompleteSuccess,
-		ESaveGame_SaveSubfilesCompleteFail,
-		ESaveGame_SaveSubfilesIncomplete,
-		ESaveGame_SaveSubfilesIncomplete_WaitingOnResponse,
-
+		ESaveGame_Idle = 0,
+		ESaveGame_Save,
+		ESaveGame_InternalRequestingDevice,
+		ESaveGame_InternalGetSaveName,
+		ESaveGame_InternalSaving,
+		ESaveGame_CopySave,
+		ESaveGame_CopyingSave,
 		ESaveGame_Load,
-		ESaveGame_LoadComplete,
-		ESaveGame_EnumerateSubfiles,
-		ESaveGame_EnumerateSubfilesComplete,
-		ESaveGame_LoadSubfiles,
-		ESaveGame_LoadCompleteSuccess,
-		
-		ESaveGame_LoadCompleteFail,
-
-		ESaveGame_Delete,
-		ESaveGame_DeleteSuccess,
-		ESaveGame_DeleteFail,
-
+		ESaveGame_GetSavesInfo,
 		ESaveGame_Rename,
-		ESaveGame_RenameSuccess,
-		ESaveGame_RenameFail,
+		ESaveGame_Delete,
 
-		ESaveGame_GetSaveThumbnail,
-		ESaveGame_GetSaveThumbnailComplete,
+		ESaveGame_GetSaveThumbnail		// Not used as an actual state in the PS4, but the game expects this to be returned to indicate success when getting a thumbnail
 
-		ESaveGame_Copy,
-		ESaveGame_CopyCompleteSuccess,
-		ESaveGame_CopyCompleteFail,
+	};
+	enum ELoadGameStatus
+	{
+		ELoadGame_Idle = 0,
+		ELoadGame_InProgress,
+		ELoadGame_NoSaves,
+		ELoadGame_ChangedDevice,
+		ELoadGame_DeviceRemoved
 	};
 
-	enum EOptionsState
+	enum EDeleteGameStatus
 	{
-		EOptions_Idle=0,
-		EOptions_Save,	
-		EOptions_Load,	
-		EOptions_Delete,	
-		EOptions_NoSpace,	
-		EOptions_Corrupt,	
-	};
-
-	enum ESaveGameStatus
-	{
-		EDeleteGame_Idle=0,
+		EDeleteGame_Idle = 0,
 		EDeleteGame_InProgress,
+	};
+
+
+	enum ESGIStatus
+	{
+		ESGIStatus_Error = 0,
+		ESGIStatus_Idle,
+		ESGIStatus_ReadInProgress,
+		ESGIStatus_NoSaves,
 	};
 
 	enum EDLCStatus
 	{
-		EDLC_Error=0,
+		EDLC_Error = 0,
 		EDLC_Idle,
 		EDLC_NoOffers,
 		EDLC_AlreadyEnumeratedAllOffers,
@@ -274,219 +175,170 @@ public:
 
 	enum ESavingMessage
 	{
-		ESavingMessage_None=0,
+		ESavingMessage_None = 0,
 		ESavingMessage_Short,
 		ESavingMessage_Long
 	};
 
-	enum ESaveIncompleteType
-	{
-		ESaveIncomplete_None,
-		ESaveIncomplete_OutOfQuota,
-		ESaveIncomplete_OutOfLocalStorage,
-		ESaveIncomplete_Unknown
-	};
-
 	enum ETMSStatus
 	{
-		ETMSStatus_Idle=0,
+		ETMSStatus_Idle = 0,
 		ETMSStatus_Fail,
-		ETMSStatus_ReadInProgress,
-		ETMSStatus_ReadFileListInProgress,
-		ETMSStatus_WriteInProgress,
 		ETMSStatus_Fail_ReadInProgress,
-		ETMSStatus_Fail_ReadFileListInProgress,
-		ETMSStatus_Fail_ReadDetailsNotRetrieved,
 		ETMSStatus_Fail_WriteInProgress,
-		ETMSStatus_DeleteInProgress,
 		ETMSStatus_Pending,
 	};
 
 	enum eTMS_FileType
 	{
-		eTMS_FileType_Normal=0,
+		eTMS_FileType_Normal = 0,
 		eTMS_FileType_Graphic,
 	};
 
-	enum ESGIStatus
+	enum eTMS_FILETYPEVAL
 	{
-		ESGIStatus_Error=0,
-		ESGIStatus_Idle,
-		ESGIStatus_ReadInProgress,
-		ESGIStatus_NoSaves,
+		TMS_FILETYPE_BINARY,
+		TMS_FILETYPE_CONFIG,
+		TMS_FILETYPE_JSON,
+		TMS_FILETYPE_MAX
+	};
+	enum eTMS_UGCTYPE
+	{
+		TMS_UGCTYPE_NONE,
+		TMS_UGCTYPE_IMAGE,
+		TMS_UGCTYPE_MAX
 	};
 
-	enum
-	{
-		PROFILE_READTYPE_ALL,
-		PROFILE_READTYPE_XBOXSETTINGS // just read the settings (after a notification of settings change)
-	};
 
-	enum eOptionsCallback
+	typedef struct
 	{
-		eOptions_Callback_Idle,
-		eOptions_Callback_Write,
-		eOptions_Callback_Write_Fail_NoSpace,
-		eOptions_Callback_Write_Fail,
-		eOptions_Callback_Read,		
-		eOptions_Callback_Read_Fail,		
-		eOptions_Callback_Read_FileNotFound,		
-		eOptions_Callback_Read_Corrupt,		
-		eOptions_Callback_Read_CorruptDeletePending,
-		eOptions_Callback_Read_CorruptDeleted
-	};
+		CHAR			szFilename[256];
+		int				iFileSize;
+		eTMS_FILETYPEVAL	eFileTypeVal;
+	}
+	TMSPP_FILE_DETAILS, * PTMSPP_FILE_DETAILS;
 
-	enum eSaveTransferState
+	typedef struct
 	{
-		eSaveTransfer_Idle,
-		eSaveTransfer_Busy,
-		eSaveTransfer_GettingFileSize,
-		eSaveTransfer_FileSizeRetrieved,
-		eSaveTransfer_GetFileData,
-		eSaveTransfer_GettingFileData,
-		eSaveTransfer_FileDataRetrieved,
-		eSaveTransfer_Converting,
-		eSaveTransfer_Saving,
-	};
+		int iCount;
+		PTMSPP_FILE_DETAILS FileDetailsA;
+	}
+	TMSPP_FILE_LIST, * PTMSPP_FILE_LIST;
 
-	///////////////////////////////////////////////////////////////////////////// Global storage manager //////////////////////////////////////////////////////////////////////////////
+	typedef struct
+	{
+		DWORD dwSize;
+		PBYTE pbData;
+	}
+	TMSPP_FILEDATA, * PTMSPP_FILEDATA;
+
 
 	C4JStorage();
-	void						Tick(void);																																			// General storage manager tick to be called from game
-	
-	///////////////////////////////////////////////////////////////////////////// Savegame data ///////////////////////////////////////////////////////////////////////////////////////
 
-	// Initialisation
-	void						Init(unsigned int uiSaveVersion,LPCWSTR pwchDefaultSaveName,char *pszSavePackName,int iMinimumSaveSize,												// General manager initialisation
-									 int( *Func)(LPVOID, const ESavingMessage, int),LPVOID lpParam,
-									 bool(*SetRetrieveProductIDFn)(XCONTENT_DATA &Data),WCHAR *pwchSCID,WCHAR *pwchTitleId);																		
-	void						SetGameSaveFolderTitle(WCHAR *wszGameSaveFolderTitle);																								// Sets the title to be set in the param.sfo of saves (this doesn't vary, the sub-title is used for the user cho
-	void						SetSaveCacheFolderTitle(WCHAR *wszSaveCacheFolderTitle);																							// Sets the title to be set in the param.sfo of the save cache
-	void						SetOptionsFolderTitle(WCHAR *wszOptionsFolderTitle);																								// Sets the title to be set in the param.sfo of the options file
-	void						SetGameSaveFolderPrefix(char *szGameSaveFolderPrefix);																								// Sets the prefix to be added to the unique filename of each save to construct a final folder name
-	void						SetMaxSaves(int iMaxC);																																// Sets the maximum number of saves to be evaluated by GetSavesInfo etc.
-	void						SetDefaultImages(PBYTE pbSaveThumbnail,DWORD dwSaveThumbnailBytes);																					// Sets default save thumbnail, which can be used when saving a game that hasn't generated any yet
-	void						SetIncompleteSaveCallback(void( *Func)(LPVOID, const ESaveIncompleteType), LPVOID param);															// Sets callback to be used in the event of a save method not being able to complete
+	void								Tick(void);
 
-	// Miscellaneous control
-	void						SetSaveDisabled(bool bDisable);																														// Sets saving disabled/enabled state
-	bool						GetSaveDisabled(void);																																// Determines whether saving has been disabled
-	void						ResetSaveData();																																	// Releases any internal storage being held for previously saved/loaded data
-	C4JStorage::ESaveGameState	DoesSaveExist(bool *pbExists);																														// Determine if current savegame exists on storage device
+	// Messages
+	C4JStorage::EMessageResult			RequestMessageBox(UINT uiTitle, UINT uiText, UINT* uiOptionA, UINT uiOptionC, DWORD dwPad = XUSER_INDEX_ANY,
+		int(*Func)(LPVOID, int, const C4JStorage::EMessageResult) = NULL, LPVOID lpParam = NULL, C4JStringTable* pStringTable = NULL, WCHAR* pwchFormatString = NULL, DWORD dwFocusButton = 0);
+
+
+	C4JStorage::EMessageResult			GetMessageBoxResult();
+
+	// save device
+	bool								SetSaveDevice(int(*Func)(LPVOID, const bool), LPVOID lpParam, bool bForceResetOfSaveDevice = false);
+
+	// savegame
+	void						Init(unsigned int uiSaveVersion, LPCWSTR pwchDefaultSaveName, char* pszSavePackName, int iMinimumSaveSize, int(*Func)(LPVOID, const ESavingMessage, int), LPVOID lpParam, LPCSTR szGroupID);
+	void						ResetSaveData(); // Call before a new save to clear out stored save file name
+	void						SetDefaultSaveNameForKeyboardDisplay(LPCWSTR pwchDefaultSaveName);
+	void						SetSaveTitle(LPCWSTR pwchDefaultSaveName);
+	bool						GetSaveUniqueNumber(INT* piVal);
+	bool						GetSaveUniqueFilename(char* pszName);
+	void						SetSaveUniqueFilename(char* szFilename);
+	void						SetState(ESaveGameControlState eControlState, int(*Func)(LPVOID, const bool), LPVOID lpParam);
+	void						SetSaveDisabled(bool bDisable);
+	bool						GetSaveDisabled(void);
+	unsigned int				GetSaveSize();
+	void						GetSaveData(void* pvData, unsigned int* puiBytes);
+	PVOID						AllocateSaveData(unsigned int uiBytes);
+	void						SetSaveImages(PBYTE pbThumbnail, DWORD dwThumbnailBytes, PBYTE pbImage, DWORD dwImageBytes, PBYTE pbTextData, DWORD dwTextDataBytes);					// Sets the thumbnail & image for the save, optionally setting the metadata in the png
+	C4JStorage::ESaveGameState	SaveSaveData(int(*Func)(LPVOID, const bool), LPVOID lpParam);
+	void						CopySaveDataToNewSave(PBYTE pbThumbnail, DWORD cbThumbnail, WCHAR* wchNewName, int (*Func)(LPVOID lpParam, bool), LPVOID lpParam);
+	void						SetSaveDeviceSelected(unsigned int uiPad, bool bSelected);
+	bool						GetSaveDeviceSelected(unsigned int iPad);
+	C4JStorage::ESaveGameState	DoesSaveExist(bool* pbExists);
 	bool						EnoughSpaceForAMinSaveGame();
-	C4JStorage::ESaveGameState	GetSaveState();
 
-	// Get details of existing savedata
-	C4JStorage::ESaveGameState	GetSavesInfo(int iPad,int ( *Func)(LPVOID lpParam,SAVE_DETAILS *pSaveDetails,const bool),LPVOID lpParam,char *pszSavePackName);						// Start search
-	PSAVE_DETAILS				ReturnSavesInfo();																																	// Returns result of search (or nullptr if not yet received)
-	void						ClearSavesInfo();																																	// Clears results
-	C4JStorage::ESaveGameState	LoadSaveDataThumbnail(PSAVE_INFO pSaveInfo,int( *Func)(LPVOID lpParam,PBYTE pbThumbnail,DWORD dwThumbnailBytes), LPVOID lpParam, bool force=false);	// Get the thumbnail for an individual save referenced by pSaveInfo
+	void								SetSaveMessageVPosition(float fY); // The 'Saving' message will display at a default position unless changed
+	// Get the info for the saves
+	C4JStorage::ESaveGameState	GetSavesInfo(int iPad, int (*Func)(LPVOID lpParam, SAVE_DETAILS* pSaveDetails, const bool), LPVOID lpParam, char* pszSavePackName);
+	PSAVE_DETAILS				ReturnSavesInfo();
+	void						ClearSavesInfo();	// Clears results
+	C4JStorage::ESaveGameState	LoadSaveDataThumbnail(PSAVE_INFO pSaveInfo, int(*Func)(LPVOID lpParam, PBYTE pbThumbnail, DWORD dwThumbnailBytes), LPVOID lpParam);	// Get the thumbnail for an individual save referenced by pSaveInfo
 
-	// Loading savedata & obtaining information from just-loaded file
-	C4JStorage::ESaveGameState	LoadSaveData(PSAVE_INFO pSaveInfo,int( *Func)(LPVOID lpParam,const bool, const bool), LPVOID lpParam);												// Loads savedata referenced by pSaveInfo, calls callback once complete
-	unsigned int				GetSaveSize();																																		// Obtains sizse of just-loaded save
-	void						GetSaveData(void *pvData,unsigned int *puiBytes);																									// Obtains pointer to, and size, of just-loaded save
-	bool						GetSaveUniqueNumber(INT *piVal);																													// Gets the unique numeric portion of the folder name used for the save (encodes m
-	bool						GetSaveUniqueFilename(char *pszName);																												// Get the full unique "filename" used as part of the folder name for the save
+	void								GetSaveCacheFileInfo(DWORD dwFile, XCONTENT_DATA& xContentData);
+	void								GetSaveCacheFileInfo(DWORD dwFile, PBYTE* ppbImageData, DWORD* pdwImageBytes);
 
-	// Handling of sub-files (numerically indexed ) within the save
-	unsigned int				GetSubfileCount();																																	// Get the number of sub-files in the just-loaded save
-	void						ResetSubfiles();																																	// Reset storage manager's references to sub-files, to be called when we are finished with the save game
-	void						GetSubfileDetails(int idx, unsigned int *subfileId, unsigned char **data, unsigned int *sizeOut);													// Gets details for sub-file from 0 to GetSubfileCount() - 1. Caller is responsible for data allocation after this point.
-	void						UpdateSubfile(int idx, unsigned char *data, unsigned int size);																						// Update internal details for a sub-file, from 0 to GetSubfileCount() - 1.
-	int							AddSubfile(unsigned int subfileId);																													// Adds an additional sub-file with a given subfileId, returns index
-	C4JStorage::ESaveGameState	SaveSubfiles(int( *Func)(LPVOID ,const bool),LPVOID lpParam);																						// Writes all modified sub-files, calling callback on completion
-
-	// Saving savedata
-	void						SetSaveTitle(const wchar_t *UTF16String);																											// Sets the name which is used as a sub-title in the savedata param.sfo
-	PVOID						AllocateSaveData(unsigned int uiBytes);																												// Allocate storage manager owned memory to the data which is to be saved to
-	void						SetSaveDataSize(unsigned int uiBytes);																												// Set the actual size of data to be saved
-	void						GetDefaultSaveImage(PBYTE *ppbSaveImage,DWORD *pdwSaveImageBytes);																					// Get the default save thumbnail (as set by SetDefaultImages) for use on saving games t
-	void						GetDefaultSaveThumbnail(PBYTE *ppbSaveThumbnail,DWORD *pdwSaveThumbnailBytes);																		// Get the default save image (as set by SetDefaultImages) for use on saving games that 
-	void						SetSaveImages( PBYTE pbThumbnail,DWORD dwThumbnailBytes,PBYTE pbImage,DWORD dwImageBytes, PBYTE pbTextData ,DWORD dwTextDataBytes);					// Sets the thumbnail & image for the save, optionally setting the metadata in the png
-	C4JStorage::ESaveGameState	SaveSaveData(int( *Func)(LPVOID ,const bool),LPVOID lpParam);																						// Save the actual data, calling callback on completion
-
-	// Handling of incomplete saves (either sub-files or save data). To be used after game has had callback for an incomplete save event
-	void						ContinueIncompleteOperation();
-	void						CancelIncompleteOperation();
-
-	// Other file operations
-	C4JStorage::ESaveGameState	DeleteSaveData(PSAVE_INFO pSaveInfo,int( *Func)(LPVOID lpParam,const bool), LPVOID lpParam);														// Deletes savedata referenced by pSaveInfo, calls callback when comple
-	C4JStorage::ESaveGameState	CopySaveData(PSAVE_INFO pSaveInfo,int( *Func)(LPVOID ,const bool,C4JStorage::ESaveGameState state),bool( *FuncProg)(LPVOID ,const int),LPVOID lpParam);								// Copies savedata referenced by pSaveInfo, calls callback when complete
-	C4JStorage::ESaveGameState	RenameSaveData(int iRenameIndex,uint16_t*pui16NewName,int( *Func)(LPVOID lpParam,const bool), LPVOID lpParam);										// Renamed savedata with index from last established ReturnSavesInfo.
-	
-	// Internal methods
-	void						GetSaveImage(PBYTE *ppbSaveImage, int *puiSaveImageBytes);
-	void						GetSaveThumbnail(PBYTE *ppbSaveThumbnail, int *puiSaveThumbnailBytes);
-	void						SetSaveUniqueFilename(wchar_t *szFilename);
-
-	///////////////////////////////////////////////////////////////////////////// Profile data ////////////////////////////////////////////////////////////////////////////////////////
-	// Initialisation
-	void						InitialiseProfileData(unsigned short usProfileVersion, UINT uiProfileValuesC, UINT uiProfileSettingsC, DWORD *pdwProfileSettingsA, int iGameDefinedDataSizeX4, unsigned int *puiGameDefinedDataChangedBitmask);	// General initialisation
-	int							SetDefaultOptionsCallback(int( *Func)(LPVOID,PROFILESETTINGS *, const int iPad),LPVOID lpParam);													// Set a callback that can initialise a profile's storage to its default settings
-	void						SetOptionsDataCallback(int( *Func)(LPVOID,  int iPad, unsigned short usVersion, C4JStorage::eOptionsCallback),LPVOID lpParam);						// Sets callback that is called when status of any options has changed
-	int							SetOldProfileVersionCallback(int( *Func)(LPVOID,unsigned char *, const unsigned short,const int),LPVOID lpParam);
-
-	// Getting and setting of profile data
-	PROFILESETTINGS *			GetDashboardProfileSettings(int iPad);																												// Get pointer to the standard (originally xbox dashboard) profile data for one user
-	void						*GetGameDefinedProfileData(int iQuadrant);																											// Get pointer to the game-defined profile data for one user
-
-	// Reading and writing profiles
-	void						ReadFromProfile(int iQuadrant, int iReadType=PROFILE_READTYPE_ALL);																					// Initiate read profile data for one user - read type is ignored on this platform
-	void						WriteToProfile(int iQuadrant, bool bGameDefinedDataChanged=false, bool bOverride5MinuteLimitOnProfileWrites=false);									// Initiate write profile for one user
-	void						DeleteOptionsData(int iPad);																														// Delete profile data for one user
-	void						ForceQueuedProfileWrites(int iPad=-1);																												// Force any queued profile writes to write now
+	// Load the save. Need to call GetSaveData once the callback is called
+	C4JStorage::ESaveGameState			LoadSaveData(PSAVE_INFO pSaveInfo, int(*Func)(LPVOID lpParam, const bool, const bool), LPVOID lpParam);
+	C4JStorage::ESaveGameState		DeleteSaveData(PSAVE_INFO pSaveInfo, int(*Func)(LPVOID lpParam, const bool), LPVOID lpParam);
 
 	// DLC
-	C4JStorage::EDLCStatus		GetInstalledDLC(int iPad,int( *Func)(LPVOID, int, int),LPVOID lpParam);
-	void						SetLicenseChangeFn(void( *Func)(void));
+	void								RegisterMarketplaceCountsCallback(int (*Func)(LPVOID lpParam, C4JStorage::DLC_TMS_DETAILS*, int), LPVOID lpParam);
+	void								SetDLCPackageRoot(char* pszDLCRoot);
+	C4JStorage::EDLCStatus				GetDLCOffers(int iPad, int(*Func)(LPVOID, int, DWORD, int), LPVOID lpParam, DWORD dwOfferTypesBitmask = XMARKETPLACE_OFFERING_TYPE_CONTENT);
+	DWORD								CancelGetDLCOffers();
+	void								ClearDLCOffers();
+	XMARKETPLACE_CONTENTOFFER_INFO& GetOffer(DWORD dw);
+	int									GetOfferCount();
+	DWORD								InstallOffer(int iOfferIDC, unsigned __int64* ullOfferIDA, int(*Func)(LPVOID, int, int), LPVOID lpParam, bool bTrial = false);
+	DWORD								GetAvailableDLCCount(int iPad);
 
-	XCONTENT_DATA&				GetDLC(DWORD dw);
-	DWORD						MountInstalledDLC(int iPad,DWORD dwDLC,int( *Func)(LPVOID, int, DWORD,DWORD),LPVOID lpParam,LPWSTR szMountDrive = nullptr);
-	DWORD						UnmountInstalledDLC(LPWSTR szMountDrive = nullptr);
-	void						GetMountedDLCFileList(const char* szMountDrive, std::vector<std::wstring>& fileList);
-	std::wstring				GetMountedPath(std::wstring szMount);
-	XCONTENT_DATA *				GetInstalledDLC(WCHAR *wszProductID);
+	C4JStorage::EDLCStatus				GetInstalledDLC(int iPad, int(*Func)(LPVOID, int, int), LPVOID lpParam);
+	XCONTENT_DATA& GetDLC(DWORD dw);
+	DWORD								MountInstalledDLC(int iPad, DWORD dwDLC, int(*Func)(LPVOID, int, DWORD, DWORD), LPVOID lpParam, LPCSTR szMountDrive = NULL);
+	DWORD								UnmountInstalledDLC(LPCSTR szMountDrive = NULL);
+	void								GetMountedDLCFileList(const char* szMountDrive, std::vector<std::string>& fileList);
+	std::string							GetMountedPath(std::string szMount);
 
-	C4JStorage::EDLCStatus		GetDLCOffers(int iPad,int( *Func)(LPVOID, int, DWORD, int),LPVOID lpParam, DWORD dwOfferTypesBitmaskT);
-	MARKETPLACE_CONTENTOFFER_INFO&		GetOffer(DWORD dw);
-	DWORD								InstallOffer(int iOfferIDC,WCHAR *pwchProductId,int( *Func)(LPVOID, int, int),LPVOID lpParam, bool bTrial=false);
+	// Global title storage
+	C4JStorage::ETMSStatus				ReadTMSFile(int iQuadrant, eGlobalStorage eStorageFacility, C4JStorage::eTMS_FileType eFileType,
+		WCHAR* pwchFilename, BYTE** ppBuffer, DWORD* pdwBufferSize, int(*Func)(LPVOID, WCHAR*, int, bool, int) = NULL, LPVOID lpParam = NULL, int iAction = 0);
+	bool								WriteTMSFile(int iQuadrant, eGlobalStorage eStorageFacility, WCHAR* pwchFilename, BYTE* pBuffer, DWORD dwBufferSize);
+	bool								DeleteTMSFile(int iQuadrant, eGlobalStorage eStorageFacility, WCHAR* pwchFilename);
+	void								StoreTMSPathName(WCHAR* pwchName = NULL);
 
-	void						UpdateDLCProductIDs(); // once we have the dlc info, we can give local installed DLC their product ids
-
-	//void						SetRetrieveProductIDFn(int( *Func)(XCONTENT_DATA&)); // Retrieve a product id for the dlc from the game
-
-	void						Suspend();
-	bool						Suspended();
-
-	///////////////////////////////////////////////////////////////////////////// Unimplemented stubs /////////////////////////////////////////////////////////////////////////////////
-#pragma warning(disable: 4100)
-	void						SetSaveDeviceSelected(unsigned int uiPad,bool bSelected) {}
-	bool						GetSaveDeviceSelected(unsigned int iPad) { return true; }
-	void						ClearDLCOffers();
-// 	C4JStorage::ETMSStatus		ReadTMSFile(int iQuadrant,eGlobalStorage eStorageFacility,C4JStorage::eTMS_FileType eFileType, WCHAR *pwchFilename,BYTE **ppBuffer,DWORD *pdwBufferSize,int( *Func)(LPVOID, WCHAR *,int, bool, int),LPVOID lpParam, int iAction);// { return C4JStorage::ETMSStatus_Idle; }
-// 	bool						WriteTMSFile(int iQuadrant,eGlobalStorage eStorageFacility,LPWSTR wszFilename,BYTE *pBuffer,DWORD dwBufferSize);
-	bool						DeleteTMSFile(int iQuadrant,eGlobalStorage eStorageFacility,LPWSTR wszFilename);
-	
 	// TMS++
-  	C4JStorage::ETMSStatus		TMSPP_GetUserQuotaInfo(C4JStorage::eGlobalStorage eStorageFacility,int iPad);//,TMSCLIENT_CALLBACK Func,LPVOID lpParam, int iUserData=0);
-	eTitleStorageState			TMSPP_WriteFile(int iQuadrant,C4JStorage::eGlobalStorage eStorageFacility,C4JStorage::eTMS_FILETYPEVAL eFileTypeVal,LPWSTR wszFilename,BYTE *pbBuffer,DWORD dwBufferSize,int( *Func)(LPVOID,int,int)=nullptr,LPVOID lpParam=nullptr, int iUserData=0);
-	eTitleStorageState			TMSPP_ReadFile(int iQuadrant,C4JStorage::eGlobalStorage eStorageFacility,C4JStorage::eTMS_FILETYPEVAL eFileTypeVal,LPWSTR wszFilename,int( *Func)(LPVOID,int,int,LPVOID, WCHAR *),LPVOID lpParam, int iUserData);
-	eTitleStorageState			TMSPP_DeleteFile(int iQuadrant,C4JStorage::eGlobalStorage eStorageFacility,C4JStorage::eTMS_FILETYPEVAL eFileTypeVal,LPWSTR wszFilename,int( *Func)(LPVOID,int,int),LPVOID lpParam, int iUserData);
-	eTitleStorageState			TMSPP_ReadFileList(int iPad,C4JStorage::eGlobalStorage eStorageFacility,int( *Func)(LPVOID,int,int,LPVOID,WCHAR *)=nullptr,LPVOID lpParam=nullptr, int iUserData=0);
-	bool						TMSPP_InFileList(eGlobalStorage eStorageFacility, int iPad,const wstring &Filename);
+#ifdef _XBOX
+	C4JStorage::ETMSStatus				WriteTMSFile(int iPad, C4JStorage::eGlobalStorage eStorageFacility, C4JStorage::eTMS_FileType eFileType, CHAR* pchFilePath, CHAR* pchBuffer, DWORD dwBufferSize, TMSCLIENT_CALLBACK Func, LPVOID lpParam);
+	HRESULT								GetUserQuotaInfo(int iPad, TMSCLIENT_CALLBACK Func, LPVOID lpParam);
+#endif
 
-	eTitleStorageState			TMSPP_GetTitleStorageState(int iPad);
-	void						TMSPP_ClearTitleStorageState(int iPad);
+	// 	C4JStorage::ETMSStatus				TMSPP_WriteFile(int iPad,C4JStorage::eGlobalStorage eStorageFacility,C4JStorage::eTMS_FILETYPEVAL eFileTypeVal,C4JStorage::eTMS_UGCTYPE eUGCType,CHAR *pchFilePath,CHAR *pchBuffer,DWORD dwBufferSize,int( *Func)(LPVOID,int,int)=NULL,LPVOID lpParam=NULL, int iUserData=0);
+	// 	C4JStorage::ETMSStatus				TMSPP_GetUserQuotaInfo(int iPad,TMSCLIENT_CALLBACK Func,LPVOID lpParam, int iUserData=0);
+	C4JStorage::ETMSStatus				TMSPP_ReadFile(int iPad, C4JStorage::eGlobalStorage eStorageFacility, C4JStorage::eTMS_FILETYPEVAL eFileTypeVal, LPCSTR szFilename, int(*Func)(LPVOID, int, int, PTMSPP_FILEDATA, LPCSTR) = NULL, LPVOID lpParam = NULL, int iUserData = 0);
+	// 	C4JStorage::ETMSStatus				TMSPP_ReadFileList(int iPad,C4JStorage::eGlobalStorage eStorageFacility,CHAR *pchFilePath,int( *Func)(LPVOID,int,int,PTMSPP_FILE_LIST)=NULL,LPVOID lpParam=NULL, int iUserData=0);
+	// 	C4JStorage::ETMSStatus				TMSPP_DeleteFile(int iPad,LPCSTR szFilePath,C4JStorage::eTMS_FILETYPEVAL eFileTypeVal,int( *Func)(LPVOID,int,int),LPVOID lpParam=NULL, int iUserData=0);
+	// 	bool								TMSPP_InFileList(eGlobalStorage eStorageFacility, int iPad,const wstring &Filename);
+	// 	unsigned int						CRC(unsigned char *buf, int len);
+
+// 	enum eXBLWS
+// 	{
+// 		eXBLWS_GET,
+// 		eXBLWS_POST,
+// 		eXBLWS_PUT,
+// 		eXBLWS_DELETE,
+// 	};
+	//bool								XBLWS_Command(eXBLWS eCommand);
 
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	unsigned int						CRC(unsigned char* buf, int len);
 
-	// SAVE TRANSFERS
-	C4JStorage::eSaveTransferState SaveTransferClearState();
-	C4JStorage::eSaveTransferState SaveTransferGetDetails(int iPad, eGlobalStorage source, wchar_t *file, int ( *Func)(LPVOID lpParam,C4JStorage::SAVETRANSFER_FILE_DETAILS *pSaveTransferDetails),LPVOID lpParam);
-	C4JStorage::eSaveTransferState SaveTransferGetData(int iPad, eGlobalStorage source, wchar_t *file,int ( *Func)(LPVOID lpParam,C4JStorage::SAVETRANSFER_FILE_DETAILS *pSaveTransferDetails),int ( *ProgressFunc)(LPVOID lpParam,unsigned long),LPVOID lpParam,LPVOID lpProgressParam);
-	void CancelSaveTransfer(int ( *CancelCompleteFunc)(LPVOID lpParam),LPVOID lpParam);
+	// #ifdef _DEBUG
+	// 	void SetSaveName(int i);					
+	// #endif
+		// string table for all the Storage problems. Loaded by the application
+	C4JStringTable* m_pStringTable;
 };
 
 extern C4JStorage StorageManager;

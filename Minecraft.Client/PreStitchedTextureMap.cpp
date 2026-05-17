@@ -487,7 +487,7 @@ void PreStitchedTextureMap::loadUVs()
 		ADD_ICON(8,		15,	L"dyePowder_light_blue")
 
 		ADD_ICON(9,		0,	L"helmetCloth_overlay")
-		//ADD_ICON(9,		1,	L"unused")
+		ADD_ICON(9,		1,	L"ingotNetherite")
 		ADD_ICON(9,		2,	L"iron_horse_armor")
 		ADD_ICON(9,		3,	L"diamond_horse_armor")
 		ADD_ICON(9,		4,	L"gold_horse_armor")
