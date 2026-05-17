@@ -23,7 +23,7 @@ Item *Item::netheriteIngot = nullptr; //item register, set Item *Item::xxx to re
 
 void Item::staticCtor()
 {
-  //omit hundreds of lines of code agian
+  //omit hundreds of lines of code again
   Item::netheriteIngot = (new Item(166)) //item id
     ->setBaseItemTypeAndMaterial(eBaseItemType_treasure, eMaterial_undefined) //item type, treasure and underfined
     ->setIconName(L"ingotNetherite") //texture name, texture is ingotNetherite here
@@ -89,7 +89,8 @@ void PreStitchedTextureMap::loadUVs()
 	/* ADD_ICON(9, 1, L"ingotNetherite")` means:
 	 - Column 10 (first number 9 + 1)
 	 - Row 2 (second number 1 + 1)
-	 - Your texture must sit exactly in */
+	 - Your texture must sit exactly in
+	*/
 ```
 
 Draw something new (16*16 texture on grid) on items.png, replace all items.png, and see what happend!
@@ -100,3 +101,14 @@ This part involves hex editing `.loc` files. Don't panic.
 Chapter 2 will cover hex editing basics and the language file format. 
 
 For now, your item will show its internal name in-game. We'll fix that soon.
+
+### Show your mettle
+1. Fork the `test` branch
+2. Follow Chapter 1 step by step
+3. Add something
+4. Submit a PR to `test` branch
+5. I'll check if it's playable and merge it
+
+Yes, you can literally add anything. That's the point.
+
+(If it crashes, open an Issue. We debug together.)
