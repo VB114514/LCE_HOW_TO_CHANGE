@@ -1,66 +1,85 @@
 @echo off
-chcp 65001 >nul
-title Git一键提交脚本
+title Git One-Click Commit to test branch
 
-:: 设置项目路径（当前脚本所在目录，可手动修改）
 set "project_path=%~dp0"
-:: GitHub仓库URL
 set "repo_url=https://github.com/VB114514/LCE_HOW_TO_CHANGE"
+set "branch_name=test"
 
 echo ========================================
-echo        Git 一键提交脚本
+echo   Git One-Click Commit to %branch_name%
 echo ========================================
-echo 项目路径：%project_path%
-echo 远程仓库：%repo_url%
+echo Project: %project_path%
+echo Branch: %branch_name%
 echo.
 
 cd /d "%project_path%"
 
-:: 检查是否已初始化Git仓库
+:: Init if needed
 if not exist ".git" (
-    echo 未检测到Git仓库，正在初始化...
+    echo Initializing git repo...
     git init
     git remote add origin %repo_url%
     echo.
 )
 
-:: 确保远程地址正确（防止重复添加）
 git remote set-url origin %repo_url% 2>nul
 
-:: 显示当前状态
-echo 当前文件状态：
+:: Show current branch and status
+echo Current status:
 git status
 echo.
 
-:: 添加所有更改
-echo 正在添加所有文件...
+:: Switch to test branch (create if not exists)
+echo Switching to %branch_name% branch...
+git checkout %branch_name% 2>nul
+if errorlevel 1 (
+    echo Branch %branch_name% not found, creating...
+    git checkout -b %branch_name%
+)
+echo.
+
+:: Add all changes
+echo Adding files...
 git add .
 if errorlevel 1 (
-    echo 添加文件失败！
+    echo Add failed!
     pause
     exit /b
 )
 
-:: 提交更改（支持自定义提交信息）
-set /p commit_msg="请输入提交信息（直接回车使用默认）: "
-if "%commit_msg%"=="" set commit_msg="Auto commit at %date% %time%"
+:: Commit
+set /p commit_msg="Commit message (Enter for auto): "
+if "%commit_msg%"=="" set commit_msg=Auto commit %date% %time%
 
-echo 正在提交...
-git commit -m %commit_msg%
+echo Committing to %branch_name%...
+git commit -m "%commit_msg%"
 if errorlevel 1 (
-    echo 没有需要提交的更改或提交失败。
+    echo Nothing to commit.
+    pause
+    exit /b
+)
+
+:: Push to test branch
+echo Pushing to origin/%branch_name%...
+git push -u origin %branch_name%
+
+if errorlevel 1 (
+    echo.
+    echo ========================================
+    echo Push failed! Try manual commands:
+    echo.
+    echo git push -u origin test
+    echo.
+    echo Or if first push:
+    echo git push -u origin HEAD:test
+    echo ========================================
 ) else (
-    echo 正在推送到远程仓库...
-    git push -u origin test
-    if errorlevel 1 (
-        echo 推送失败，请检查网络或分支名称（尝试使用master分支）
-        echo 尝试推送到master分支...
-        git push -u origin master
-    ) else (
-        echo 提交成功！
-    )
+    echo.
+    echo ========================================
+    echo Success! Pushed to %branch_name% branch.
+    echo ========================================
 )
 
 echo.
-echo 操作完成！
+echo Done!
 pause
