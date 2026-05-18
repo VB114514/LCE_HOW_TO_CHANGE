@@ -96,11 +96,14 @@ void PreStitchedTextureMap::loadUVs()
 Draw something new (16*16 texture on grid) on items.png, replace all items.png, and see what happend!
 
 ### We need a name
-This part involves hex editing `.loc` files. Don't panic. 
+Your item has no proper name yet. It shows raw internal text in-game.
 
-Chapter 2 will cover hex editing basics and the language file format. 
+Chapter 2: Hex Editing for People Who've Never Opened a Hex Editor
+- We'll open a .loc file in HxD (free, tiny, safe)
+- Change a few bytes
+- Give your item a name
 
-For now, your item will show its internal name in-game. We'll fix that soon.
+It's copy-paste. If I can do it on a laggy laptop that crashes when I switch tabs, you can do it.
 
 ### Show your mettle
 1. Fork the `test` branch
@@ -111,4 +114,11 @@ For now, your item will show its internal name in-game. We'll fix that soon.
 
 Yes, you can literally add anything. That's the point.
 
-(If it crashes, open an Issue. We debug together.)
+### What if I break everything?
+You will. That's normal. I broke it many times before AU1.
+
+- Game crashes → Open an Issue, paste the error
+- Texture looks weird → Check your grid coordinates (column+1, row+1)
+- Item won't appear → Did you add it to `IUIScene_CreativeMenu.cpp`?
+
+We debug in public. No shame. This repo exists because I crashed my game more times than I can count.
