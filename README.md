@@ -39,7 +39,7 @@ static Item *netheriteIngot; //define item netheriteIngot
 
 
 //omit hundreds of lines of code
-static const int netheriteIngot_Id = 422; //ID before + 256
+static const int netheriteIngot_Id = 422; //ID before + 255
 ```
 **Copy-Paste Zone:** Paste the `Item::netheriteIngot = ...` block right below the last item in `staticCtor()`. 
 Change the ID number if 166 is taken.
@@ -93,7 +93,7 @@ void PreStitchedTextureMap::loadUVs()
 	*/
 ```
 
-Draw something new (16*16 texture on grid) on items.png, replace all items.png, and see what happend!
+Draw something new (16*16 texture on grid) on items.png, replace all items.png with new one, change your setIconName(), and see what happend!
 
 ### We need a name
 Your item has no proper name yet. It shows raw internal text in-game.
@@ -240,3 +240,182 @@ Don't panic. Check:
 - Game crashes? → you forgot a number. Check the table.
 
 You now know more about binary localization than 99% of people who play Minecraft. Go touch grass, then come back for Chapter 3: Blocks.
+
+## Chapter 3: Blocks
+
+### Just like items
+
+Check this Tile.cpp, You'll see: Blocks just like items!
+```cpp
+const float Tile::INDESTRUCTIBLE_DESTROY_TIME = -1.0f;
+
+//sounds
+Tile::SoundType *Tile::SOUND_NORMAL = nullptr; //normal
+Tile::SoundType *Tile::SOUND_WOOD = nullptr; //wood
+Tile::SoundType *Tile::SOUND_GRAVEL = nullptr; //gravel
+Tile::SoundType *Tile::SOUND_GRASS = nullptr; //grass
+Tile::SoundType *Tile::SOUND_STONE = nullptr; //etc.
+Tile::SoundType *Tile::SOUND_METAL = nullptr;
+Tile::SoundType *Tile::SOUND_GLASS = nullptr;
+Tile::SoundType *Tile::SOUND_CLOTH = nullptr;
+Tile::SoundType *Tile::SOUND_SAND = nullptr;
+Tile::SoundType *Tile::SOUND_SNOW = nullptr;
+Tile::SoundType *Tile::SOUND_LADDER = nullptr;
+Tile::SoundType *Tile::SOUND_ANVIL = nullptr;
+
+//omit much code......
+
+Tile *Tile::testBlock = nullptr; //define testBlock, just like items
+
+//omit some code......
+
+void Tile::staticCtor()
+{
+	//omit much code......
+	Tile::testBlock = (new Tile(174, Material::stone))
+	->setBaseItemTypeAndMaterial(Item::eBaseItemType_block, Item::eMaterial_stone) //base is normal block, material is stone, you can replace it with wood, iron, gold......
+	->setDestroyTime(2.0f) //set destroy time, here's 2 seconds (hand)
+	->setExplodeable(10) //set explode resistance, here's 10
+	->setSoundType(Tile::SOUND_STONE) //set sound, here's stone sound
+	->setIconName(L"stone") //set texture, here's stone
+	->setDescriptionId(IDS_TILE_STONE) //set name, here's stone
+	->setUseDescriptionId(IDS_DESC_STONE) //set description, here's stone, it's useless, so you don't need change it
+	->setDrop(Tile::diamondBlock_Id, 2); //drop 2 diamond blocks, replace it with Item::yourItem_Id (replace yourItem with real name) , it will drop your items! delete this line to drop 1 of itself
+}
+```
+#### ⚠ Drop ID Warning
+`setDrop(xxx, 2)` — the first parameter is an **item** ID, not a block ID.
+If your block ID is 174, the item ID is also 174. They share the same number.
+
+`setDrop(Item::diamond_Id, 2)` — drops 2 diamonds when you break this block.
+Delete the `->setDrop(...)` line to make it drop 1 of itself (AU3+ default).
+
+.h file:
+```h
+//omit much code......
+class Tile
+{
+	//omit much code......
+	static const int testBlock_Id = 174; //same as ID before
+	//omit much code......
+	static Tile *testBlock; //define block
+```
+
+just like chapter 1, right?
+
+#### ⚠ Block ID Limit
+Block IDs max out at 255. Don't go past it or things explode.
+We're working on a fix. Until then, count to 255. Carefully.
+
+### See them again
+we need itemGroup to take it, do you remember items? Forget? Nevermind!
+```cpp
+#include "stdafx.h"
+#include "IUIScene_CreativeMenu.h"
+
+#include "UI.h"
+#include "../../Minecraft.h"
+#include "../../MultiPlayerLocalPlayer.h"
+#include "../../../Minecraft.World/net.minecraft.world.inventory.h"
+#include "../../../Minecraft.World/net.minecraft.world.level.tile.h"
+#include "../../../Minecraft.World/net.minecraft.world.level.tile.entity.h"
+#include "../../../Minecraft.World/net.minecraft.world.item.h"
+#include "../../../Minecraft.World/net.minecraft.world.item.enchantment.h"
+#include "../../../Minecraft.World/net.minecraft.world.entity.h"
+#include "../../../Minecraft.World/net.minecraft.world.entity.animal.h"
+#include "../../../Minecraft.World/JavaMath.h"
+
+// 4J JEV - Images for each tab.
+IUIScene_CreativeMenu::TabSpec **IUIScene_CreativeMenu::specs = nullptr;
+
+vector< shared_ptr<ItemInstance> > IUIScene_CreativeMenu::categoryGroups[eCreativeInventoryGroupsCount];
+
+#define ITEM(id) list->push_back( shared_ptr<ItemInstance>(new ItemInstance(id, 1, 0)) );
+#define ITEM_AUX(id, aux) list->push_back( shared_ptr<ItemInstance>(new ItemInstance(id, 1, aux)) );
+#define DEF(index) list = &categoryGroups[index];
+
+void IUIScene_CreativeMenu::staticCtor()
+{
+	vector< shared_ptr<ItemInstance> > *list;
+
+
+	// Building Blocks
+	DEF(eCreativeInventory_BuildingBlocks)
+		ITEM(Tile::stone_Id)
+		ITEM(Tile::grass_Id)
+		ITEM(Tile::dirt_Id)
+		ITEM(Tile::cobblestone_Id)
+		ITEM(Tile::sand_Id)
+		ITEM(Tile::sandStone_Id)
+		ITEM_AUX(Tile::sandStone_Id, SandStoneTile::TYPE_SMOOTHSIDE)
+		ITEM_AUX(Tile::sandStone_Id, SandStoneTile::TYPE_HEIROGLYPHS)
+		ITEM(Tile::coalBlock_Id)
+		ITEM(Tile::goldBlock_Id)
+		ITEM(Tile::ironBlock_Id)
+		ITEM(Tile::lapisBlock_Id)
+		ITEM(Tile::diamondBlock_Id)
+		ITEM(Tile::emeraldBlock_Id)
+		ITEM_AUX(Tile::quartzBlock_Id,QuartzBlockTile::TYPE_DEFAULT)
+		ITEM(Tile::coalOre_Id)
+		ITEM(Tile::lapisOre_Id)
+		ITEM(Tile::diamondOre_Id)
+		ITEM(Tile::redStoneOre_Id)
+		ITEM(Tile::ironOre_Id)
+		ITEM(Tile::goldOre_Id)
+		ITEM(Tile::emeraldOre_Id)
+		ITEM(Tile::netherQuartz_Id)
+		ITEM(Tile::unbreakable_Id)
+		//add ITEM(Tile::yourBlock_Id), replace yourBlock with real name, done!
+```
+
+### Draw some blocks
+Old block textures is boring too, we need a new one!
+
+Check PreStitchedTextureMap.cpp again!
+```cpp
+else
+	{
+		float horizRatio = 1.0f/16.0f;
+		float vertRatio = 1.0f/32.0f;
+
+		ADD_ICON(0,		0,	L"grass_top")
+		texturesByName[L"grass_top"]->setFlags(Icon::IS_GRASS_TOP);			// 4J added for faster determination of texture type in tesselation
+		ADD_ICON(0,		1,	L"stone")
+		ADD_ICON(0,		2,	L"dirt")
+		ADD_ICON(0,		3,	L"grass_side")
+		texturesByName[L"grass_side"]->setFlags(Icon::IS_GRASS_SIDE);		// 4J added for faster determination of texture type in tesselation
+		ADD_ICON(0,		4,	L"planks_oak")
+		ADD_ICON(0,		5,	L"stoneslab_side")
+		ADD_ICON(0,		6,	L"stoneslab_top")
+		ADD_ICON(0,		7,	L"brick") //it means column 0+1, row 7+1 is brick
+
+		/* ADD_ICON(0, 7, L"brick")` means:
+	 	- Column 1 (first number 0 + 1)
+	 	- Row 8 (second number 7 + 1)
+	 	- Your texture must sit exactly in
+		*/
+```
+Draw something new (16*32 texture on grid) on terrain.png, replace all terrain.png with new one, change your setIconName(), and see what happend!
+
+### What's your name
+Same as Chapter 2, If you forget, Learn again, do it, and change your setDescriptionId()!
+
+### Blocks vs Items
+| What | Items (Ch1) | Blocks (Ch3) |
+|---|---|---|
+| File | Item.cpp | Tile.cpp |
+| Texture file | items.png | terrain.png |
+| ADD_ICON file | PreStitchedTextureMap.cpp (TYPE_TERRAIN) | PreStitchedTextureMap.cpp (else) |
+| Register | `Item::xxx = (new Item(id))` | `Tile::xxx = (new Tile(id, Material::xxx))` |
+| Creative menu | `ITEM(Item::xxx_Id)` | `ITEM(Tile::xxx_Id)` |
+| Name | `IDS_ITEM_XXX` | `IDS_TILE_XXX` |
+| Drop | `It hasn't this` | `Tile::xxx->setDrop(...)` |
+| Drop default | `It hasn't thisx` drops 1 of itself | `Tile::xxx` drops 1 of itself (AU3+) |
+| Crash if ID > 255? | All (id of first item is 256) | **Yes** (hard limit) |
+
+### Show your mettle #3
+1. Open old files
+2. Follow Chapter 3 step by step
+3. Add something
+4. Submit a PR to `test` branch
+5. I'll check if it's playable and merge it
