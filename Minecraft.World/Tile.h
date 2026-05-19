@@ -364,6 +364,7 @@ public:
 	static const int woolCarpet_Id = 171;
 	static const int clayHardened_Id = 172;
 	static const int coalBlock_Id = 173;
+	static const int testBlock_Id = 174;
 
 
 	static Tile *stone;
@@ -540,10 +541,13 @@ public:
 	static Tile *woolCarpet;
 	static Tile *clayHardened;
 	static Tile *coalBlock;
+	static Tile *testBlock;
 
 	static void staticCtor();
 
 	int id;
+	int dropCount;
+	int dropItem;
 protected:
 	float destroySpeed;
 	float explosionResistance;
@@ -583,6 +587,7 @@ protected:
 	virtual Tile *setLightBlock(int i);
 	virtual Tile *setLightEmission(float f);
 	virtual Tile *setExplodeable(float explosionResistance);
+	virtual Tile *setDrop(int item, int count);
 	Tile *setBaseItemTypeAndMaterial(int iType,int iMaterial);
 public:
 	static bool isSolidBlockingTile(int t);

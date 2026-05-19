@@ -220,6 +220,8 @@ Tile *Tile::woolCarpet = nullptr;
 Tile *Tile::clayHardened = nullptr;
 Tile *Tile::coalBlock = nullptr;
 
+Tile *Tile::testBlock = nullptr;
+
 DWORD Tile::tlsIdxShape = TlsAlloc();
 
 Tile::ThreadStorage::ThreadStorage()
@@ -286,7 +288,7 @@ void Tile::staticCtor()
 	Tile::dispenser = (new DispenserTile(23))									->setBaseItemTypeAndMaterial(Item::eBaseItemType_redstoneContainer,	Item::eMaterial_undefined)->setDestroyTime(3.5f)->setSoundType(Tile::SOUND_STONE)->setIconName(L"dispenser")->setDescriptionId(IDS_TILE_DISPENSER)->sendTileData()->setUseDescriptionId(IDS_DESC_DISPENSER);
 	Tile::sandStone = (new SandStoneTile(24))									->setBaseItemTypeAndMaterial(Item::eBaseItemType_structblock,	Item::eMaterial_sand)->setSoundType(Tile::SOUND_STONE)->setDestroyTime(0.8f)->sendTileData()->setIconName(L"sandstone")->setDescriptionId(IDS_TILE_SANDSTONE)->setUseDescriptionId(IDS_DESC_SANDSTONE)->sendTileData();
 	Tile::noteblock = (new NoteBlockTile(25))									->setDestroyTime(0.8f)->setIconName(L"noteblock")->setDescriptionId(IDS_TILE_MUSIC_BLOCK)->sendTileData()->setUseDescriptionId(IDS_DESC_NOTEBLOCK);
-	Tile::bed = (new BedTile(26))												->setDestroyTime(0.2f)->setIconName(L"bed")->setDescriptionId(IDS_TILE_BED)->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_BED);
+	Tile::bed = (new BedTile(26))												->setDestroyTime(0.2f)->setSoundType(Tile::SOUND_WOOD)->setIconName(L"bed")->setDescriptionId(IDS_TILE_BED)->setNotCollectStatistics()->sendTileData()->setUseDescriptionId(IDS_DESC_BED);
 	Tile::goldenRail = (new PoweredRailTile(27))								->setBaseItemTypeAndMaterial(Item::eBaseItemType_rail,	Item::eMaterial_gold)->setDestroyTime(0.7f)->setSoundType(Tile::SOUND_METAL)->setIconName(L"rail_golden")->setDescriptionId(IDS_TILE_GOLDEN_RAIL)->sendTileData()->setUseDescriptionId(IDS_DESC_POWEREDRAIL)->disableMipmap();
 	Tile::detectorRail = (new DetectorRailTile(28))								->setBaseItemTypeAndMaterial(Item::eBaseItemType_rail,	Item::eMaterial_detector)->setDestroyTime(0.7f)->setSoundType(Tile::SOUND_METAL)->setIconName(L"rail_detector")->setDescriptionId(IDS_TILE_DETECTOR_RAIL)->sendTileData()->setUseDescriptionId(IDS_DESC_DETECTORRAIL)->disableMipmap();
 	Tile::pistonStickyBase = static_cast<PistonBaseTile *>((new PistonBaseTile(29, true))->setBaseItemTypeAndMaterial(Item::eBaseItemType_piston, Item::eMaterial_stickypiston)->setIconName(L"pistonStickyBase")->setDescriptionId(IDS_TILE_PISTON_STICK_BASE)->setUseDescriptionId(IDS_DESC_STICKY_PISTON)->sendTileData());
@@ -446,6 +448,14 @@ void Tile::staticCtor()
 	Tile::woolCarpet =		(new WoolCarpetTile(171))				->setBaseItemTypeAndMaterial(Item::eBaseItemType_carpet,	Item::eMaterial_cloth)->setDestroyTime(0.1f)->setSoundType(SOUND_CLOTH)->setIconName(L"woolCarpet")->setLightBlock(0)->setDescriptionId(IDS_TILE_CARPET)->setUseDescriptionId(IDS_DESC_CARPET);
 	Tile::clayHardened = (new Tile(172, Material::stone))			->setBaseItemTypeAndMaterial(Item::eBaseItemType_clay,	Item::eMaterial_clay)->setDestroyTime(1.25f)->setExplodeable(7)->setSoundType(SOUND_STONE)->setIconName(L"hardened_clay")->setDescriptionId(IDS_TILE_HARDENED_CLAY)->setUseDescriptionId(IDS_DESC_HARDENED_CLAY);
 	Tile::coalBlock = (new Tile(173, Material::stone))				->setBaseItemTypeAndMaterial(Item::eBaseItemType_block,	Item::eMaterial_coal)->setDestroyTime(5.0f)->setExplodeable(10)->setSoundType(SOUND_STONE)->setIconName(L"coal_block")->setDescriptionId(IDS_TILE_COAL)->setUseDescriptionId(IDS_DESC_COAL_BLOCK);
+	Tile::testBlock = (new Tile(Tile::testBlock_Id, Material::stone))
+    ->setBaseItemTypeAndMaterial(Item::eBaseItemType_block, Item::eMaterial_stone)
+    ->setDestroyTime(2.0f)
+    ->setExplodeable(10)
+    ->setSoundType(Tile::SOUND_STONE)
+    ->setIconName(L"stone")
+    ->setDescriptionId(IDS_TILE_STONE)
+    ->setUseDescriptionId(IDS_DESC_STONE);
 
 
 	// Special cases for certain items since they can have different icons
@@ -565,6 +575,8 @@ Tile *Tile::sendTileData(unsigned char importantMask/*=15*/)
 
 void Tile::init()
 {
+	dropItem = 0;
+	dropCount = 0;
 }
 
 
@@ -591,6 +603,13 @@ int Tile::getMaterial()
 Tile *Tile::setSoundType(const SoundType *soundType)
 {
 	this->soundType = soundType;
+	return this;
+}
+
+Tile *Tile::setDrop(int item, int count)
+{
+	this->dropItem = item;
+	this->dropCount = count;
 	return this;
 }
 
@@ -888,12 +907,12 @@ void Tile::onRemove(Level *level, int x, int y, int z, int id, int data)
 
 int Tile::getResourceCount(Random *random)
 {
-	return 1;
+	return this->dropCount != 0 ? this->dropCount : 1;
 }
 
 int Tile::getResource(int data, Random *random, int playerBonusLevel)
 {
-	return id;
+    return this->dropItem > 0 ? this->dropItem : this->id;
 }
 
 float Tile::getDestroyProgress(shared_ptr<Player> player, Level *level, int x, int y, int z)
