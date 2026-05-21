@@ -419,3 +419,74 @@ Same as Chapter 2, If you forget, Learn again, do it, and change your setDescrip
 3. Add something
 4. Submit a PR to `test` branch
 5. I'll check if it's playable and merge it
+
+## Chapter 4: Recipies
+### Simplest One
+Congratulations! You found the simplest chapter!
+
+see this:
+```cpp
+addShaped(new ItemInstance(Tile::testBlock, 1),
+    	3, 3,
+		L"#########",
+    	{{L'#', new ItemInstance(Item::netheriteIngot, 1, 0)}},
+    	Recipy::eGroupType_Decoration); 
+```
+
+It means: there's a Decoration type recipe. It has 3 columns (first 3) and 3 rows (second 3), shape is:
+```text
+###
+###
+###
+```
+and # means one netheriteIngot
+
+Now, try this!
+
+```cpp
+addShaped(new ItemInstance(Tile::testBlock, 1),
+    	3, 3,
+		L"####!1111",
+    	{{L'#', new ItemInstance(Item::netheriteIngot, 1, 0)}, {L'1', new ItemInstance(Tile::stone, 1, 0)}, {L'!', new ItemInstance(Item::coal, 1, CoalItem::CHAR_COAL)}},
+    	Recipy::eGroupType_Decoration);
+```
+It means: there's a Decoration type recipe. It has 3 columns (first 3) and 3 rows (second 3), shape is:
+```text
+###
+#!1
+111
+```
+and # means one data 0 netheriteIngot, 1 means one data 0 stone, ! means one data 1 coal (also charcoal)
+
+// Tips: Same character = same item. Different character = different item.
+// You can use any letter or symbol you want.
+
+### Be unshaped
+```cpp
+addShapeless(new ItemInstance(Tile::testBlock, 1),
+    	{new ItemInstance(Item::netheriteIngot, 5, 0)},
+    	Recipy::eGroupType_Decoration);
+```
+It means: there's a Decoration type recipe and it needs five netheriteIngots
+
+```cpp
+addShapeless(new ItemInstance(Tile::testBlock, 1),
+    	{new ItemInstance(Item::netheriteIngot, 5, 0), new ItemInstance(Item::diamond, 3, 0)},
+    	Recipy::eGroupType_Decoration);
+```
+It means: there's a Decoration type recipe and it needs five netheriteIngots and three diamonds
+
+#### Tips
+- **Shaped**: Use for recipes that need a specific pattern (tools, doors, etc.)
+- **Shapeless**: Use when ingredients just need to be present (dyes, book, etc.)
+- **Group**: Stick with `Recipy::eGroupType_Decoration` until AU5. Other groups work but the UI might hide them.
+
+#### ⚠ Current Limitation
+In AU4, all recipes work like shapeless — you just need the ingredients in your inventory. The shape grid is for display only. True shaped crafting (where items must be placed in the exact pattern) returns in AU5.
+
+### Show your mettle #4
+1. Open old files
+2. Follow Chapter 4 step by step
+3. Add something
+4. Submit a PR to `test` branch
+5. I'll check if it's playable and merge it
