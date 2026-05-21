@@ -458,8 +458,9 @@ It means: there's a Decoration type recipe. It has 3 columns (first 3) and 3 row
 ```
 and # means one data 0 netheriteIngot, 1 means one data 0 stone, ! means one data 1 coal (also charcoal)
 
-// Tips: Same character = same item. Different character = different item.
-// You can use any letter or symbol you want.
+Tips: Same character = same item. Different character = different item.
+
+You can use any letter or symbol you want.
 
 ### Be unshaped
 ```cpp
