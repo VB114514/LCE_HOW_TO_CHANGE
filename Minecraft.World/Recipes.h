@@ -89,6 +89,8 @@ private:
 public:
 	ShapedRecipy *addShapedRecipy(ItemInstance *, ... );
 	void addShapelessRecipy(ItemInstance *result,... ); 
+	ShapedRecipy *addShaped(ItemInstance *result, int width, int height, const wchar_t *pattern, std::initializer_list<std::pair<wchar_t, ItemInstance *>> mappings, int group = Recipy::eGroupType_Decoration);
+	void addShapeless(ItemInstance *result, std::initializer_list<ItemInstance *> ingredients, int group = Recipy::eGroupType_Decoration);
 
 	shared_ptr<ItemInstance> getItemFor(shared_ptr<CraftingContainer> craftSlots, Level *level, Recipy *recipesClass = nullptr); // 4J Added recipesClass param
 	vector <Recipy *> *getRecipies();

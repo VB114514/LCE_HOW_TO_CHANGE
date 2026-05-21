@@ -995,6 +995,12 @@ Recipes::Recipes()
 		L'D');
 
 
+	addShaped(new ItemInstance(Tile::testBlock, 1),
+    	3, 3,
+		L"#########",
+    	{{L'#', new ItemInstance(Item::netheriteIngot, 1, 0)}},
+    	Recipy::eGroupType_Decoration);
+
 	// Sort so the largest recipes get checked first!
 	/* 4J-PB - TODO
 	Collections.sort(recipies, new Comparator<Recipy>()
@@ -1247,6 +1253,34 @@ void Recipes::addShapelessRecipy(ItemInstance *result,... )
 	}
 
 	recipies->push_back(new ShapelessRecipy(result, ingredients, group));
+}
+
+// old 4J code is bad, so i made a new one above but left this in place as it is used by the old code and I didnt want to break it, also it is simpler to use for the new code
+ShapedRecipy* Recipes::addShaped(ItemInstance* result, int width, int height, const wchar_t* pattern, std::initializer_list<std::pair<wchar_t, ItemInstance*>> mappings, int group)
+{
+    myMap* map = new unordered_map<wchar_t, ItemInstance*>();
+    for (auto& m : mappings) {
+        map->insert(myMap::value_type(m.first, m.second));
+    }
+    
+    ItemInstance** ids = new ItemInstance*[width * height];
+    for (int j = 0; j < width * height; j++) {
+        auto it = map->find(pattern[j]);
+        ids[j] = (it != map->end()) ? it->second : nullptr;
+    }
+    
+    ShapedRecipy* recipe = new ShapedRecipy(width, height, ids, result, static_cast<Recipy::_eGroupType>(group));
+    recipies->push_back(recipe);
+    return recipe;
+}
+
+void Recipes::addShapeless(ItemInstance* result, std::initializer_list<ItemInstance*> ingredients, int group)
+{
+    vector<ItemInstance*>* list = new vector<ItemInstance*>();
+    for (auto& ing : ingredients) {
+        list->push_back(ing->copy_not_shared());
+    }
+    recipies->push_back(new ShapelessRecipy(result, list, static_cast<Recipy::_eGroupType>(group)));
 }
 
 shared_ptr<ItemInstance> Recipes::getItemFor(shared_ptr<CraftingContainer> craftSlots, Level *level, Recipy *recipesClass /*= nullptr*/)
