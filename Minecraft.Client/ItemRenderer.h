@@ -51,4 +51,13 @@ private:
 public:
 	void blit(float x, float y, int sx, int sy, float w, float h);		// 4J - changed x,y,w,h to floats
 	void blit(float x, float y, Icon *tex, float w, float h);
+	struct VertexPF3TF2CB4 {
+		float x, y, z;
+		float u, v;
+		uint8_t r, g, b, a;
+		uint8_t nx, ny, nz, nw;
+		float weight;
+	};
+
+	void itemDraw(float x, float y, Icon *tex, float w, float h, const wstring& texPath);
 };

@@ -47,6 +47,7 @@ protected:
 	virtual UIControl *getSection(ESceneSection eSection);
 
 	virtual void customDraw(IggyCustomDrawCallbackRegion *region);
+	virtual void render(S32 width, S32 height, C4JRender::eViewportType viewpBort);
 	virtual void handleTimerComplete(int id);
 
 private:

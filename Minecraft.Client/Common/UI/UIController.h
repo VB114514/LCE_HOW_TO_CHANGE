@@ -180,6 +180,7 @@ private:
 
 public:
 	UIController();
+	GDrawFunctions* getGDrawFuncs() { return gdraw_funcs; }
 #ifdef __PSVITA__
 	void TouchBoxAdd(UIControl *pControl,UIScene *pUIScene);
 	bool TouchBoxHit(UIScene *pUIScene,S32 x, S32 y);

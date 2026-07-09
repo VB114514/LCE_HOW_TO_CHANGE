@@ -4482,7 +4482,6 @@ void CMinecraftApp::loadMediaArchive()
 		locExternalPath = convStringToWstring(env_var);
 		MessageBoxW(NULL, locExternalPath.c_str(), L"ENV PATH", MB_OK);
 	} else {
-		MessageBoxW(NULL, L"ENV NOT SET", L"FAIL", MB_OK);
 		locExternalPath = L"Common\\Languages\\en_us.arc";
 	}
 	m_languagePath = new ArchiveFile( File(locExternalPath) );

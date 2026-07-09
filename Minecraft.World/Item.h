@@ -22,8 +22,11 @@ class FishingRodItem;
 class EnchantedBookItem;
 class EmptyMapItem;
 
-#define ITEM_ICON_COLUMNS 16
+#include <list>
 
+extern std::unordered_map<int, wstring> itemSID;
+
+#define ITEM_ICON_COLUMNS 16
 
 class Item : public enable_shared_from_this<Item>
 {
@@ -764,4 +767,5 @@ public:
 	virtual bool isValidRepairItem(shared_ptr<ItemInstance> source, shared_ptr<ItemInstance> repairItem);
 	virtual void registerIcons(IconRegister *iconRegister);
 	virtual attrAttrModMap *getDefaultAttributeModifiers();
+	static wstring getItemSID(int id);
 };

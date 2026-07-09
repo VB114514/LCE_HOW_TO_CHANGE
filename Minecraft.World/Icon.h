@@ -32,3 +32,23 @@ public:
 	virtual int getFlags() const = 0;			// 4J added
 	virtual void setFlags(int flags) = 0;	// 4J added
 };
+
+class FullTextureIcon : public Icon
+{
+public:
+    virtual int getX() const { return 0; }
+    virtual int getY() const { return 0; }
+    virtual int getWidth() const { return 16; }
+    virtual int getHeight() const { return 16; }
+    virtual float getU0(bool adjust = false) const { return 0.0f; }
+    virtual float getU1(bool adjust = false) const { return 1.0f; }
+    virtual float getU(double offset, bool adjust = false) const { return 0.0f; }
+    virtual float getV0(bool adjust = false) const { return 0.0f; }
+    virtual float getV1(bool adjust = false) const { return 1.0f; }
+    virtual float getV(double offset, bool adjust = false) const { return 0.0f; }
+    virtual wstring getName() const { return L"full_texture"; }
+    virtual int getSourceWidth() const { return 16; }
+    virtual int getSourceHeight() const { return 16; }
+    virtual int getFlags() const { return 0; }
+    virtual void setFlags(int flags) {}
+};

@@ -755,23 +755,39 @@ void UIController::CleanUpSkinReload()
 
 byteArray UIController::getMovieData(const wstring &filename)
 {
-	// Cache everything we load in the current tick
-	int64_t targetTime = System::currentTimeMillis() + (1000LL * 60);
+    int64_t targetTime = System::currentTimeMillis() + (1000LL * 60);
     auto it = m_cachedMovieData.find(filename);
-    if(it == m_cachedMovieData.end() )
-	{
-		byteArray baFile = app.getArchiveFile(filename);
-		CachedMovieData cmd;
-		cmd.m_ba = baFile;
-		cmd.m_expiry = targetTime;
-		m_cachedMovieData[filename] = cmd;
-		return baFile;
-	}
-	else
-	{
-		it->second.m_expiry = targetTime;
-		return it->second.m_ba;
-	}
+    if(it == m_cachedMovieData.end())
+    {
+        // external files take priority over archive files, so that we can easily mod the UI by dropping files into the Common/Media folder
+        wstring externalPath = L"Common\\Media\\" + filename;
+        File externalFile(externalPath);
+        byteArray baFile;
+        if (externalFile.exists())
+        {
+            int64_t size = externalFile.length();
+            uint8_t* data = new uint8_t[size];
+            FILE* f = _wfopen(externalPath.c_str(), L"rb");
+            fread(data, 1, size, f);
+            fclose(f);
+            baFile = byteArray(data, size);
+        }
+        else
+        {
+            baFile = app.getArchiveFile(filename);
+        }
+        
+        CachedMovieData cmd;
+        cmd.m_ba = baFile;
+        cmd.m_expiry = targetTime;
+        m_cachedMovieData[filename] = cmd;
+        return baFile;
+    }
+    else
+    {
+        it->second.m_expiry = targetTime;
+        return it->second.m_ba;
+    }
 }
 
 // INPUT

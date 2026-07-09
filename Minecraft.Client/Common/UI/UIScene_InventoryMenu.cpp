@@ -224,13 +224,9 @@ void UIScene_InventoryMenu::customDraw(IggyCustomDrawCallbackRegion *region)
 
 	if(wcscmp((wchar_t *)region->name,L"player")==0)
 	{
-		// Setup GDraw, normal game render states and matrices
 		CustomDrawData *customDrawRegion = ui.setupCustomDraw(this,region);
 		delete customDrawRegion;
-
 		m_playerPreview.render(region);
-
-		// Finish GDraw and anything else that needs to be finalised
 		ui.endCustomDraw(region);
 	}
 	else
@@ -238,6 +234,19 @@ void UIScene_InventoryMenu::customDraw(IggyCustomDrawCallbackRegion *region)
 		UIScene_AbstractContainerMenu::customDraw(region);
 	}
 }
+void UIScene_InventoryMenu::render(S32 width, S32 height, C4JRender::eViewportType viewpBort)
+{
+	UIScene_AbstractContainerMenu::render(width, height, viewpBort);
+
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	if(pMinecraft->localplayers[m_iPad] == nullptr || pMinecraft->localgameModes[m_iPad] == nullptr) return;
+
+	RenderSlotGridJSON("Common\\Media\\crafting_grid.json", m_menu, m_iPad);
+	RenderSlotGridJSON("Common\\Media\\armor_grid.json", m_menu, m_iPad);
+	RenderSlotGridJSON("Common\\Media\\inv_grid.json", m_menu, m_iPad);
+	RenderSlotGridJSON("Common\\Media\\hotbar_grid.json", m_menu, m_iPad);
+}
+
 
 void UIScene_InventoryMenu::handleTimerComplete(int id)
 {

@@ -56,8 +56,8 @@ private:
 public:
     Tesselator *getUniqueInstance(int size);
     void end();
-private:
 	void clear();
+private:
 
 	// 4J - added to handle compact quad vertex format, which need packaged up as quads
 	unsigned int m_ix[4],m_iy[4],m_iz[4];

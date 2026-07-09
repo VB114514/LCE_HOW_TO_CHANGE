@@ -762,3 +762,47 @@ void ItemRenderer::blit(float x, float y, Icon *tex, float w, float h)
 	t->vertexUV(xx0f, yy0f, blitOffset, tex->getU0(true), tex->getV0(true));
 	t->end();
 }
+
+void ItemRenderer::itemDraw(float x, float y, Icon *tex, float w, float h, const wstring& texPath)
+{
+    Minecraft *pMinecraft = Minecraft::GetInstance();
+    
+    // 绑纹理
+    pMinecraft->textures->bindTexture(texPath);
+    
+    // 设置Iggy同款2D正交投影
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, (float)pMinecraft->width, (float)pMinecraft->height, 0, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    
+    // 顶点数据——直接用像素坐标
+    VertexPF3TF2CB4 verts[4];
+    memset(verts, 0, sizeof(verts));
+    
+    verts[0].x = x;      verts[0].y = y + h;  verts[0].u = 0.0f; verts[0].v = 1.0f;
+    verts[1].x = x + w;  verts[1].y = y + h;  verts[1].u = 1.0f; verts[1].v = 1.0f;
+    verts[2].x = x + w;  verts[2].y = y;      verts[2].u = 1.0f; verts[2].v = 0.0f;
+    verts[3].x = x;      verts[3].y = y;      verts[3].u = 0.0f; verts[3].v = 0.0f;
+    
+    for (int i = 0; i < 4; i++) {
+        verts[i].z = 0;
+        verts[i].r = 255; verts[i].g = 255; verts[i].b = 255; verts[i].a = 255;
+        verts[i].weight = 1.0f;
+    }
+    
+    RenderManager.DrawVertices(
+        C4JRender::PRIMITIVE_TYPE_TRIANGLE_FAN,
+        4, verts,
+        C4JRender::VERTEX_TYPE_PF3_TF2_CB4_NB4_XW1,
+        C4JRender::PIXEL_SHADER_TYPE_STANDARD);
+    
+    // 恢复矩阵
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+}

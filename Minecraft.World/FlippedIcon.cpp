@@ -46,7 +46,7 @@ float FlippedIcon::getU(double offset, bool adjust/*=false*/) const
 
 float FlippedIcon::getV0(bool adjust/*=false*/) const
 {
-	if (vertical) return base->getV0(adjust);
+	if (vertical) return base->getV1(adjust);
 	return base->getV0(adjust);
 }
 

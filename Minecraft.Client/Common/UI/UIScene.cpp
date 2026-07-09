@@ -7,6 +7,10 @@
 #include "../../LocalPlayer.h"
 #include "../../ItemRenderer.h"
 #include "../../../Minecraft.World/net.minecraft.world.item.h"
+#include "../../../Minecraft.World/net.minecraft.world.inventory.h"
+#include "../../../Minecraft.World/Icon.h"
+#include <fstream>
+#include <sstream>
 
 UIScene::UIScene(int iPad, UILayer *parentLayer)
 {
@@ -861,6 +865,144 @@ void UIScene::customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iP
 			ui.endCustomDraw(region);
 		}
 	}
+}
+void UIScene::customDrawSlotControlNoFlash(shared_ptr<ItemInstance> item, float x, float y, float width, float height, float fAlpha, bool isFoil, bool bDecorations)
+{
+	if (item == nullptr) return;
+
+	Minecraft *pMinecraft = Minecraft::GetInstance();
+	if (pMinecraft == nullptr) return;
+
+	float scaleX = width / 16.0f;
+	float scaleY = height / 16.0f;
+
+	glEnable(GL_RESCALE_NORMAL);
+	glPushMatrix();
+	glRotatef(120, 1, 0, 0);
+	Lighting::turnOn();
+	glPopMatrix();
+
+	float pop = item->popTime;
+	if (pop > 0)
+	{
+		glPushMatrix();
+		float squeeze = 1 + pop / static_cast<float>(Inventory::POP_TIME_DURATION);
+		float sxoffs = 8 * scaleX;
+		float syoffs = 12 * scaleY;
+		glTranslatef(x + sxoffs, y + syoffs, 0);
+		glScalef(1 / squeeze, (squeeze + 1) / 2, 1);
+		glTranslatef(-(x + sxoffs), -(y + syoffs), 0);
+	}
+
+	if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
+	RenderManager.StateSetBlendEnable(true);
+	RenderManager.StateSetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	RenderManager.StateSetBlendFactor(0xffffffff);
+	m_pItemRenderer->renderAndDecorateItem(pMinecraft->font, pMinecraft->textures, item, x, y, scaleX, scaleY, fAlpha, isFoil, false, true);
+
+	if (pop > 0)
+	{
+		glPopMatrix();
+	}
+
+	if (bDecorations)
+	{
+		if ((scaleX != 1.0f) || (scaleY != 1.0f))
+		{
+			glPushMatrix();
+			glScalef(scaleX, scaleY, 1.0f);
+			int iX = static_cast<int>(0.5f + x / scaleX);
+			int iY = static_cast<int>(0.5f + y / scaleY);
+			m_pItemRenderer->renderGuiItemDecorations(pMinecraft->font, pMinecraft->textures, item, iX, iY, fAlpha);
+			glPopMatrix();
+		}
+		else
+		{
+			m_pItemRenderer->renderGuiItemDecorations(pMinecraft->font, pMinecraft->textures, item, static_cast<int>(x), static_cast<int>(y), fAlpha);
+		}
+	}
+
+	Lighting::turnOff();
+	glDisable(GL_RESCALE_NORMAL);
+}
+
+void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerMenu* menu, int iPad)
+{
+    std::ifstream file(jsonPath);
+    if (!file.is_open()) return;
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
+    file.close();
+    
+    SlotGridConfig cfg;
+    memset(&cfg, 0, sizeof(cfg));
+    
+    auto findValue = [&content](const std::string& key) -> float {
+        size_t pos = content.find("\"" + key + "\"");
+        if (pos == std::string::npos) return 0;
+        pos = content.find(":", pos);
+        if (pos == std::string::npos) return 0;
+        pos = content.find_first_of("0123456789.-", pos);
+        if (pos == std::string::npos) return 0;
+        return (float)atof(content.c_str() + pos);
+    };
+    
+    cfg.x = findValue("x");
+    cfg.y = findValue("y");
+    cfg.columns = (int)findValue("columns");
+    cfg.rows = (int)findValue("rows");
+    cfg.slotWidth = findValue("slotWidth");
+    cfg.slotHeight = findValue("slotHeight");
+    cfg.startSlotId = (int)findValue("startSlotId");
+    
+    if (cfg.columns <= 0 || cfg.rows <= 0) return;
+    
+    Minecraft *pMinecraft = Minecraft::GetInstance();
+	Tesselator *t = Tesselator::getInstance();
+	FullTextureIcon fullIcon;
+    
+    // 第一遍：画所有背景
+	int r = 0;
+    for (int r = 0; r < cfg.rows; r++)
+    {
+        for (int c = 0; c < cfg.columns; c++)
+        {
+            float sx = cfg.x + c * cfg.slotWidth;
+            float sy = cfg.y + r * cfg.slotHeight;
+            t->begin();
+            t->color((byte)26, (byte)26, (byte)26, (byte)204);
+            t->vertexUV(sx, sy + cfg.slotHeight, 0, 0, 0);
+            t->vertexUV(sx + cfg.slotWidth, sy + cfg.slotHeight, 0, 0, 0);
+            t->vertexUV(sx + cfg.slotWidth, sy, 0, 0, 0);
+            t->vertexUV(sx, sy, 0, 0, 0);
+            t->end();
+        }
+    }
+    
+    // 第二遍：画所有物品
+	int r2 = 0;
+    for (int r2 = 0; r2 < cfg.rows; r2++)
+    {
+        for (int c = 0; c < cfg.columns; c++)
+        {
+            int slotId = cfg.startSlotId + r2 * cfg.columns + c;
+            if (!menu) continue;
+            Slot* slot = menu->getSlot(slotId);
+            if (!slot || !slot->hasItem()) continue;
+            
+            shared_ptr<ItemInstance> item = slot->getItem();
+            Icon* icon = item->getIcon();
+            if (!icon) continue;
+            
+            float sx = cfg.x + c * cfg.slotWidth;
+            float sy = cfg.y + r2 * cfg.slotHeight;
+            
+			if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
+			//pMinecraft->textures->bindTexture(L"gui/acacia_boat.png");
+			m_pItemRenderer->itemDraw(sx, sy, &fullIcon, cfg.slotWidth, cfg.slotHeight, L"gui/acacia_boat.png");
+		}
+    }
 }
 
 void UIScene::_customDrawSlotControl(CustomDrawData *region, int iPad, shared_ptr<ItemInstance> item, float fAlpha, bool isFoil, bool bDecorations, bool usingCommandBuffer)

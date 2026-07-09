@@ -8,6 +8,8 @@ using namespace std;
 #include "UIControl_Base.h"
 #include "UIControl_TextInput.h"
 
+extern GDrawFunctions gdraw_funcs;
+
 class ItemRenderer;
 class UILayer;
 
@@ -213,7 +215,25 @@ public:
 protected:
 	//void customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iPad, int iID, int iCount, int iAuxVal, float fAlpha, bool isFoil, bool bDecorations);
 	void customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iPad, shared_ptr<ItemInstance> item, float fAlpha, bool isFoil, bool bDecorations);
+	void customDrawSlotControlNoFlash(shared_ptr<ItemInstance> item, float x, float y, float width, float height, float fAlpha, bool isFoil, bool bDecorations);
+	struct SlotGridConfig {
+    	float x, y;
+    	int columns, rows;
+    	float slotWidth, slotHeight;
+    	int startSlotId;
+	};
 
+	struct VertexPF3TF2CB4 {
+		float x, y, z;
+		float u, v;
+		uint8_t r, g, b, a;
+		uint8_t nx, ny, nz, nw;
+		float weight;
+	};
+
+	void RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerMenu* menu, int iPad);
+	void customDrawSlotFixedSize(IggyCustomDrawCallbackRegion *region, int slotId, float size, AbstractContainerMenu *menu, int iPad);
+	
 	bool m_cacheSlotRenders;
 	bool m_needsCacheRendered;
 	int m_expectedCachedSlotCount;
