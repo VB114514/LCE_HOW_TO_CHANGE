@@ -1595,6 +1595,9 @@ const wchar_t *OriginalImagesPaths[] =
 
 bool Textures::IsOriginalImage(TEXTURE_NAME texId, const wstring& name)
 {
+	// Allow gui/ textures to be found directly (not in 1_2_2/ subfolder)
+	if (name.size() >= 4 && name.substr(0, 4) == L"gui/") return true;
+
 	int i = 0;
 	if(texId < TN_COUNT)
 	{

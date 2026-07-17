@@ -241,10 +241,14 @@ void UIScene_InventoryMenu::render(S32 width, S32 height, C4JRender::eViewportTy
 	Minecraft *pMinecraft = Minecraft::GetInstance();
 	if(pMinecraft->localplayers[m_iPad] == nullptr || pMinecraft->localgameModes[m_iPad] == nullptr) return;
 
+	ui.setupCustomDrawGameState();
+
 	RenderSlotGridJSON("Common\\Media\\crafting_grid.json", m_menu, m_iPad);
 	RenderSlotGridJSON("Common\\Media\\armor_grid.json", m_menu, m_iPad);
 	RenderSlotGridJSON("Common\\Media\\inv_grid.json", m_menu, m_iPad);
 	RenderSlotGridJSON("Common\\Media\\hotbar_grid.json", m_menu, m_iPad);
+
+	ui.endCustomDrawGameState();
 }
 
 

@@ -12,6 +12,117 @@
 #include <fstream>
 #include <sstream>
 
+#include <unordered_map>
+
+// SID -> gui texture filename mapping table
+static const std::unordered_map<std::wstring, std::wstring>& getSIDToTexMap()
+{
+    static const std::unordered_map<std::wstring, std::wstring> table = {
+        // Tools
+        {L"shovel_iron", L"iron_shovel"},
+        {L"pickaxe_iron", L"iron_pickaxe"},
+        {L"hatchet_iron", L"iron_axe"},
+        {L"sword_iron", L"iron_sword"},
+        {L"hoe_iron", L"iron_hoe"},
+        {L"shovel_wood", L"wooden_shovel"},
+        {L"pickaxe_wood", L"wooden_pickaxe"},
+        {L"hatchet_wood", L"wooden_axe"},
+        {L"sword_wood", L"wooden_sword"},
+        {L"hoe_wood", L"wooden_hoe"},
+        {L"shovel_stone", L"stone_shovel"},
+        {L"pickaxe_stone", L"stone_pickaxe"},
+        {L"hatchet_stone", L"stone_axe"},
+        {L"sword_stone", L"stone_sword"},
+        {L"hoe_stone", L"stone_hoe"},
+        {L"shovel_diamond", L"diamond_shovel"},
+        {L"pickaxe_diamond", L"diamond_pickaxe"},
+        {L"hatchet_diamond", L"diamond_axe"},
+        {L"sword_diamond", L"diamond_sword"},
+        {L"hoe_diamond", L"diamond_hoe"},
+        {L"shovel_gold", L"golden_shovel"},
+        {L"pickaxe_gold", L"golden_pickaxe"},
+        {L"hatchet_gold", L"golden_axe"},
+        {L"sword_gold", L"golden_sword"},
+        {L"hoe_gold", L"golden_hoe"},
+        // Armor
+        {L"helmet_leather", L"leather_helmet"},
+        {L"chestplate_leather", L"leather_chestplate"},
+        {L"leggings_leather", L"leather_leggings"},
+        {L"boots_leather", L"leather_boots"},
+        {L"helmet_chain", L"chainmail_helmet"},
+        {L"chestplate_chain", L"chainmail_chestplate"},
+        {L"leggings_chain", L"chainmail_leggings"},
+        {L"boots_chain", L"chainmail_boots"},
+        {L"helmet_iron", L"iron_helmet"},
+        {L"chestplate_iron", L"iron_chestplate"},
+        {L"leggings_iron", L"iron_leggings"},
+        {L"boots_iron", L"iron_boots"},
+        {L"helmet_diamond", L"diamond_helmet"},
+        {L"chestplate_diamond", L"diamond_chestplate"},
+        {L"leggings_diamond", L"diamond_leggings"},
+        {L"boots_diamond", L"diamond_boots"},
+        {L"helmet_gold", L"golden_helmet"},
+        {L"chestplate_gold", L"golden_chestplate"},
+        {L"leggings_gold", L"golden_leggings"},
+        {L"boots_gold", L"golden_boots"},
+        // Food and misc
+        {L"porkchop_raw", L"porkchop"},
+        {L"porkchop_cooked", L"cooked_porkchop"},
+        {L"apple_gold", L"golden_apple"},
+        {L"door_wood", L"oak_door"},
+        {L"door_iron", L"iron_door"},
+        {L"bucket_empty", L"bucket"},
+        {L"bucket_water", L"water_bucket"},
+        {L"bucket_lava", L"lava_bucket"},
+        {L"bucket_milk", L"milk_bucket"},
+        {L"minecart_chest", L"chest_minecart"},
+        {L"minecart_furnace", L"furnace_minecart"},
+        {L"minecart_tnt", L"tnt_minecart"},
+        {L"minecart_hopper", L"hopper_minecart"},
+        {L"seeds_wheat", L"wheat_seeds"},
+        {L"seeds_pumpkin", L"pumpkin_seeds"},
+        {L"seeds_melon", L"melon_seeds"},
+        {L"beef_raw", L"beef"},
+        {L"beef_cooked", L"cooked_beef"},
+        {L"chicken_raw", L"chicken"},
+        {L"chicken_cooked", L"cooked_chicken"},
+        {L"yellow_dust", L"glowstone_dust"},
+        {L"fish_raw", L"cod"},
+        {L"fish_cooked", L"cooked_cod"},
+        {L"dye_powder", L"ink_sac"},
+        {L"netherwart_seeds", L"nether_wart"},
+        {L"eye_of_ender", L"ender_eye"},
+        {L"speckled_melon", L"glistering_melon_slice"},
+        {L"exp_bottle", L"experience_bottle"},
+        {L"fireball", L"fire_charge"},
+        {L"carrots", L"carrot"},
+        {L"potato_baked", L"baked_potato"},
+        {L"potato_poisonous", L"poisonous_potato"},
+        {L"empty_map", L"map"},
+        {L"carrot_golden", L"golden_carrot"},
+        {L"fireworks", L"firework_rocket"},
+        {L"fireworks_charge", L"firework_star"},
+        {L"netherbrick", L"nether_brick"},
+        {L"nether_quartz", L"quartz"},
+        {L"horse_armor_metal", L"iron_horse_armor"},
+        {L"horse_armor_gold", L"golden_horse_armor"},
+        {L"horse_armor_diamond", L"diamond_horse_armor"},
+        {L"reeds", L"sugar_cane"},
+        {L"clay", L"clay_ball"},
+        {L"boat", L"oak_boat"},
+        {L"melon", L"melon_slice"},
+        {L"glass_bottle", L"glass_bottle"},
+    };
+    return table;
+}
+
+static std::wstring sidToGuiFilename(const std::wstring& sid)
+{
+    const auto& table = getSIDToTexMap();
+    auto it = table.find(sid);
+    if (it != table.end()) return it->second;
+    return sid; // fallback: SID itself (works for apple, arrow, diamond, etc.)
+}
 UIScene::UIScene(int iPad, UILayer *parentLayer)
 {
 	m_parentLayer = parentLayer;
@@ -962,7 +1073,7 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
 	Tesselator *t = Tesselator::getInstance();
 	FullTextureIcon fullIcon;
     
-    // 第一遍：画所有背景
+    // 第一遍：画所有背�?
 	int r = 0;
     for (int r = 0; r < cfg.rows; r++)
     {
@@ -980,7 +1091,7 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
         }
     }
     
-    // 第二遍：画所有物品
+    // 第二遍：画所有物�?
 	int r2 = 0;
     for (int r2 = 0; r2 < cfg.rows; r2++)
     {
@@ -997,12 +1108,24 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
             
             float sx = cfg.x + c * cfg.slotWidth;
             float sy = cfg.y + r2 * cfg.slotHeight;
-            
+
+			// Skip blocks (id < 256) - they have no gui PNG
+			if (item->id < 256) continue;
+
+			wstring sid = Item::getItemSID(item->id);
+			if (sid == L"unknown") continue;
+
+			wstring guiName = sidToGuiFilename(sid);
+			wstring texPath = L"gui/" + guiName + L".png";
+			wstring fullPath = L"Common/res/gui/" + guiName + L".png";
+			std::ifstream testFile(fullPath);
+			if (!testFile.good()) continue;
+			testFile.close();
+			
 			if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
-			//pMinecraft->textures->bindTexture(L"gui/acacia_boat.png");
-			m_pItemRenderer->itemDraw(sx, sy, &fullIcon, cfg.slotWidth, cfg.slotHeight, L"gui/acacia_boat.png");
+			m_pItemRenderer->itemDraw(sx, sy, &fullIcon, cfg.slotWidth, cfg.slotHeight, texPath);
 		}
-    }
+	}
 }
 
 void UIScene::_customDrawSlotControl(CustomDrawData *region, int iPad, shared_ptr<ItemInstance> item, float fAlpha, bool isFoil, bool bDecorations, bool usingCommandBuffer)
@@ -1076,6 +1199,7 @@ void UIScene::_customDrawSlotControl(CustomDrawData *region, int iPad, shared_pt
 	Lighting::turnOff();
 	glDisable(GL_RESCALE_NORMAL);
 }
+
 
 // 4J Stu - Not threadsafe
 //void UIScene::navigateForward(int iPad, EUIScene scene, void *initData)

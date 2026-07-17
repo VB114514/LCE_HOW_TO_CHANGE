@@ -1,0 +1,1 @@
+xcopy "Minecraft.Client\Common" "build\windows64\Minecraft.Client\Release\Common" /E /I /Y
