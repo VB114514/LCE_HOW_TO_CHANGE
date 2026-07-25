@@ -1,6 +1,8 @@
 {
   "x": 437,
   "y": 435,
+  "blockX": 823,
+  "blockY": 915,
   "columns":9,
   "rows": 1,
   "slotWidth": 42.5,

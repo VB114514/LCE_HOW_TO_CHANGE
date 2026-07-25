@@ -13,6 +13,9 @@
 #include <sstream>
 
 #include <unordered_map>
+#include "../../TileRenderer.h"
+#include "../../TextureAtlas.h"
+#include "../../../Minecraft.World/net.minecraft.world.level.tile.h"
 
 // SID -> gui texture filename mapping table
 static const std::unordered_map<std::wstring, std::wstring>& getSIDToTexMap()
@@ -1061,6 +1064,8 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
     
     cfg.x = findValue("x");
     cfg.y = findValue("y");
+    cfg.blockX = findValue("blockX");
+    cfg.blockY = findValue("blockY");
     cfg.columns = (int)findValue("columns");
     cfg.rows = (int)findValue("rows");
     cfg.slotWidth = findValue("slotWidth");
@@ -1091,39 +1096,86 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
         }
     }
     
-    // 第二遍：画所有物�?
-	int r2 = 0;
-    for (int r2 = 0; r2 < cfg.rows; r2++)
-    {
-        for (int c = 0; c < cfg.columns; c++)
-        {
-            int slotId = cfg.startSlotId + r2 * cfg.columns + c;
-            if (!menu) continue;
-            Slot* slot = menu->getSlot(slotId);
-            if (!slot || !slot->hasItem()) continue;
-            
-            shared_ptr<ItemInstance> item = slot->getItem();
-            Icon* icon = item->getIcon();
-            if (!icon) continue;
-            
-            float sx = cfg.x + c * cfg.slotWidth;
-            float sy = cfg.y + r2 * cfg.slotHeight;
+    // 第二轮: 绘制2D物品
+	for (int r2 = 0; r2 < cfg.rows; r2++)
+	{
+		for (int c = 0; c < cfg.columns; c++)
+		{
+			int slotId = cfg.startSlotId + r2 * cfg.columns + c;
+			if (!menu) continue;
+			Slot* slot = menu->getSlot(slotId);
+			if (!slot || !slot->hasItem()) continue;
 
-			// Skip blocks (id < 256) - they have no gui PNG
-			if (item->id < 256) continue;
+			shared_ptr<ItemInstance> item = slot->getItem();
+			Icon* icon = item->getIcon();
+			if (!icon) continue;
 
-			wstring sid = Item::getItemSID(item->id);
-			if (sid == L"unknown") continue;
+			float sx = cfg.x + c * cfg.slotWidth;
+			float sy = cfg.y + r2 * cfg.slotHeight;
 
-			wstring guiName = sidToGuiFilename(sid);
-			wstring texPath = L"gui/" + guiName + L".png";
-			wstring fullPath = L"Common/res/gui/" + guiName + L".png";
-			std::ifstream testFile(fullPath);
-			if (!testFile.good()) continue;
-			testFile.close();
-			
 			if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
-			m_pItemRenderer->itemDraw(sx, sy, &fullIcon, cfg.slotWidth, cfg.slotHeight, texPath);
+
+			if (item->id >= 256) // 2D物品ID
+			{
+				wstring sid = Item::getItemSID(item->id);
+				if (sid == L"unknown") continue;
+
+				wstring guiName = sidToGuiFilename(sid);
+				wstring texPath = L"gui/" + guiName + L".png";
+				wstring fullPath = L"Common/res/gui/" + guiName + L".png";
+				std::ifstream testFile(fullPath);
+				if (!testFile.good()) continue;
+				testFile.close();
+
+				m_pItemRenderer->itemDraw(sx, sy, &fullIcon, cfg.slotWidth, cfg.slotHeight, texPath);
+			}
+		}
+	}
+
+	// 第三轮: 独立绘制3D方块
+	float blockOffsetX = 50.0f;  
+	float blockOffsetY = 50.0f;  
+	float blockScale = 2.0f;    
+
+	for (int r3 = 0; r3 < cfg.rows; r3++)
+	{
+		for (int c = 0; c < cfg.columns; c++)
+		{
+			int slotId = cfg.startSlotId + r3 * cfg.columns + c;
+			if (!menu) continue;
+			Slot* slot = menu->getSlot(slotId);
+			if (!slot || !slot->hasItem()) continue;
+
+			shared_ptr<ItemInstance> item = slot->getItem();
+			if (item->id >= 256) continue;  // 跳过非方块
+
+			float gapX = cfg.slotWidth * blockScale;   // 方块实际占用的宽度
+			float gapY = cfg.slotHeight * blockScale * 1.1;  // 方块实际占用的高度
+
+			float sx = cfg.blockX + c * gapX + blockOffsetX;
+			float sy = cfg.blockY + r3 * gapY + blockOffsetY;
+			float scaleX = (cfg.slotWidth / 16.0f) * blockScale;
+			float scaleY = (cfg.slotHeight / 16.0f) * blockScale;
+
+			if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
+
+			glEnable(GL_RESCALE_NORMAL);
+			glPushMatrix();
+			glTranslatef(0, 0, -2000.0f);
+			glRotatef(120, 1, 0, 0);
+			Lighting::turnOn();
+			glPopMatrix();
+
+			glPushMatrix();
+			glTranslatef(0, 0, -2000.0f);
+			RenderManager.StateSetBlendEnable(true);
+			RenderManager.StateSetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			RenderManager.StateSetBlendFactor(0xffffffff);
+			m_pItemRenderer->renderAndDecorateItem(pMinecraft->font, pMinecraft->textures, item, sx, sy, scaleX, scaleY, 1.0f, false, false, true);
+			glPopMatrix();
+
+			Lighting::turnOff();
+			glDisable(GL_RESCALE_NORMAL);
 		}
 	}
 }

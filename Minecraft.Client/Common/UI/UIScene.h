@@ -218,6 +218,7 @@ protected:
 	void customDrawSlotControlNoFlash(shared_ptr<ItemInstance> item, float x, float y, float width, float height, float fAlpha, bool isFoil, bool bDecorations);
 	struct SlotGridConfig {
     	float x, y;
+    	float blockX, blockY;
     	int columns, rows;
     	float slotWidth, slotHeight;
     	int startSlotId;
