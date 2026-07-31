@@ -233,6 +233,7 @@ protected:
 	};
 
 	void RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerMenu* menu, int iPad);
+	void RenderGUIJSON(const std::string& jsonPath);
 	void customDrawSlotFixedSize(IggyCustomDrawCallbackRegion *region, int slotId, float size, AbstractContainerMenu *menu, int iPad);
 	
 	bool m_cacheSlotRenders;

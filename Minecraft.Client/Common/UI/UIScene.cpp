@@ -1040,6 +1040,99 @@ void UIScene::customDrawSlotControlNoFlash(shared_ptr<ItemInstance> item, float 
 	glDisable(GL_RESCALE_NORMAL);
 }
 
+void UIScene::RenderGUIJSON(const std::string& jsonPath)
+{
+    std::ifstream file(jsonPath);
+    if (!file.is_open()) return;
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
+
+    Minecraft *pMinecraft = Minecraft::GetInstance();
+    if (!pMinecraft) return;
+
+    // Disable depth writes for 2D GUI (so it won't block 3D blocks)
+    glDepthMask(false);
+
+    // Parse array of GUI elements: [{x,y,xsize,ysize,texture}, ...]
+    size_t pos = 0;
+    while (true)
+    {
+        size_t objStart = content.find('{', pos);
+        if (objStart == std::string::npos) break;
+        size_t objEnd = content.find('}', objStart);
+        if (objEnd == std::string::npos) break;
+        std::string obj = content.substr(objStart, objEnd - objStart + 1);
+        pos = objEnd + 1;
+
+        auto getFloat = [&obj](const std::string& key) -> float {
+            size_t kpos = obj.find("\"" + key + "\"");
+            if (kpos == std::string::npos) return 0.0f;
+            kpos = obj.find(':', kpos);
+            if (kpos == std::string::npos) return 0.0f;
+            kpos = obj.find_first_of("0123456789.-", kpos);
+            if (kpos == std::string::npos) return 0.0f;
+            return (float)atof(obj.c_str() + kpos);
+        };
+
+        auto getString = [&obj](const std::string& key) -> std::wstring {
+            size_t kpos = obj.find("\"" + key + "\"");
+            if (kpos == std::string::npos) return L"";
+            kpos = obj.find(':', kpos);
+            if (kpos == std::string::npos) return L"";
+            kpos = obj.find('"', kpos);
+            if (kpos == std::string::npos) return L"";
+            kpos++;
+            size_t kend = obj.find('"', kpos);
+            if (kend == std::string::npos) return L"";
+            std::string narrow = obj.substr(kpos, kend - kpos);
+            return std::wstring(narrow.begin(), narrow.end());
+        };
+
+        float x     = getFloat("x");
+        float y     = getFloat("y");
+        float w     = getFloat("xsize");
+        float h     = getFloat("ysize");
+        std::wstring tex = getString("texture");
+        if (tex.empty()) continue;
+
+        pMinecraft->textures->bindTexture(tex);
+
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        glOrtho(0, (float)pMinecraft->width, (float)pMinecraft->height, 0, -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+
+        VertexPF3TF2CB4 verts[4];
+        memset(verts, 0, sizeof(verts));
+        verts[0].x = x;     verts[0].y = y + h; verts[0].u = 0.0f; verts[0].v = 1.0f;
+        verts[1].x = x + w; verts[1].y = y + h; verts[1].u = 1.0f; verts[1].v = 1.0f;
+        verts[2].x = x + w; verts[2].y = y;     verts[2].u = 1.0f; verts[2].v = 0.0f;
+        verts[3].x = x;     verts[3].y = y;     verts[3].u = 0.0f; verts[3].v = 0.0f;
+        for (int i = 0; i < 4; i++) {
+            verts[i].z = 0;
+            verts[i].r = 255; verts[i].g = 255; verts[i].b = 255; verts[i].a = 255;
+            verts[i].weight = 1.0f;
+        }
+
+        RenderManager.DrawVertices(
+            C4JRender::PRIMITIVE_TYPE_TRIANGLE_FAN,
+            4, verts,
+            C4JRender::VERTEX_TYPE_PF3_TF2_CB4_NB4_XW1,
+            C4JRender::PIXEL_SHADER_TYPE_STANDARD);
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+    }
+
+    // Re-enable depth writes after GUI
+    glDepthMask(true);
+}
 void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerMenu* menu, int iPad)
 {
     std::ifstream file(jsonPath);
@@ -1161,7 +1254,7 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
 
 			glEnable(GL_RESCALE_NORMAL);
 			glPushMatrix();
-			glTranslatef(0, 0, -2000.0f);
+			glTranslatef(0, 0, -200.0f);
 			glRotatef(120, 1, 0, 0);
 			Lighting::turnOn();
 			glPopMatrix();
