@@ -1,8 +1,9 @@
 {
   "x": 433,
   "y": 422,
-  "blockX": 815,
-  "blockY": 895,
+  "blockX": 865,
+  "blockY": 940,
+  "gapAddB": 44.75,
   "columns":9,
   "rows": 1,
   "slotWidth": 42.5,

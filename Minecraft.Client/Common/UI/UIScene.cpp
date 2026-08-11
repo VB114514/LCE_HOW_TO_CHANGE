@@ -1159,11 +1159,21 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
     cfg.y = findValue("y");
     cfg.blockX = findValue("blockX");
     cfg.blockY = findValue("blockY");
+    if (cfg.blockX == 0) cfg.blockX = cfg.x;
+    if (cfg.blockY == 0) cfg.blockY = cfg.y;
+    if (cfg.blockX == 0) cfg.blockX = cfg.x;
+    if (cfg.blockY == 0) cfg.blockY = cfg.y;
     cfg.columns = (int)findValue("columns");
     cfg.rows = (int)findValue("rows");
     cfg.slotWidth = findValue("slotWidth");
     cfg.slotHeight = findValue("slotHeight");
     cfg.startSlotId = (int)findValue("startSlotId");
+    cfg.gapAddI = findValue("gapAddI");
+    cfg.gapAddB = findValue("gapAddB");
+    cfg.gapTimesI = findValue("gapTimesI");
+    cfg.gapTimesB = findValue("gapTimesB");
+    if (cfg.gapTimesI == 0) cfg.gapTimesI = 1.0f;
+    if (cfg.gapTimesB == 0) cfg.gapTimesB = 1.0f;
     
     if (cfg.columns <= 0 || cfg.rows <= 0) return;
     
@@ -1171,8 +1181,7 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
 	Tesselator *t = Tesselator::getInstance();
 	FullTextureIcon fullIcon;
     
-    // 第一遍：画所有背�?
-	int r = 0;
+    // Pass 1: Draw all backgrounds
     for (int r = 0; r < cfg.rows; r++)
     {
         for (int c = 0; c < cfg.columns; c++)
@@ -1189,88 +1198,87 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
         }
     }
     
-    // 第二轮: 绘制2D物品
-	for (int r2 = 0; r2 < cfg.rows; r2++)
-	{
-		for (int c = 0; c < cfg.columns; c++)
-		{
-			int slotId = cfg.startSlotId + r2 * cfg.columns + c;
-			if (!menu) continue;
-			Slot* slot = menu->getSlot(slotId);
-			if (!slot || !slot->hasItem()) continue;
+    // Pass 2: Draw 2D items
+    float itemGapX = cfg.slotWidth * cfg.gapTimesI + cfg.gapAddI;
+    float itemGapY = cfg.slotHeight * cfg.gapTimesI + cfg.gapAddI;
+    for (int r2 = 0; r2 < cfg.rows; r2++)
+    {
+        for (int c = 0; c < cfg.columns; c++)
+        {
+            int slotId = cfg.startSlotId + r2 * cfg.columns + c;
+            if (!menu) continue;
+            Slot* slot = menu->getSlot(slotId);
+            if (!slot || !slot->hasItem()) continue;
 
-			shared_ptr<ItemInstance> item = slot->getItem();
-			Icon* icon = item->getIcon();
-			if (!icon) continue;
+            shared_ptr<ItemInstance> item = slot->getItem();
+            Icon* icon = item->getIcon();
+            if (!icon) continue;
 
-			float sx = cfg.x + c * cfg.slotWidth;
-			float sy = cfg.y + r2 * cfg.slotHeight;
+            float sx = cfg.x + c * itemGapX;
+            float sy = cfg.y + r2 * itemGapY;
 
-			if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
+            if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
 
-			if (item->id >= 256) // 2D物品ID
-			{
-				wstring sid = Item::getItemSID(item->id);
-				if (sid == L"unknown") continue;
+            if (item->id >= 256) // 2D item ID
+            {
+                wstring sid = Item::getItemSID(item->id);
+                if (sid == L"unknown") continue;
 
-				wstring guiName = sidToGuiFilename(sid);
-				wstring texPath = L"gui/" + guiName + L".png";
-				wstring fullPath = L"Common/res/gui/" + guiName + L".png";
-				std::ifstream testFile(fullPath);
-				if (!testFile.good()) continue;
-				testFile.close();
+                wstring guiName = sidToGuiFilename(sid);
+                wstring texPath = L"gui/" + guiName + L".png";
+                wstring fullPath = L"Common/res/gui/" + guiName + L".png";
+                std::ifstream testFile(fullPath);
+                if (!testFile.good()) continue;
+                testFile.close();
 
-				m_pItemRenderer->itemDraw(sx, sy, &fullIcon, cfg.slotWidth, cfg.slotHeight, texPath);
-			}
-		}
-	}
+                m_pItemRenderer->itemDraw(sx, sy, &fullIcon, cfg.slotWidth, cfg.slotHeight, texPath);
+            }
+        }
+    }
 
-	// 第三轮: 独立绘制3D方块
-	float blockOffsetX = 50.0f;  
-	float blockOffsetY = 50.0f;  
-	float blockScale = 2.0f;    
+    // Pass 3: Draw 3D blocks separately
+    float blockGapX = cfg.slotWidth * cfg.gapTimesB + cfg.gapAddB;
+    float blockGapY = cfg.slotHeight * cfg.gapTimesB + cfg.gapAddB;
 
-	for (int r3 = 0; r3 < cfg.rows; r3++)
-	{
-		for (int c = 0; c < cfg.columns; c++)
-		{
-			int slotId = cfg.startSlotId + r3 * cfg.columns + c;
-			if (!menu) continue;
-			Slot* slot = menu->getSlot(slotId);
-			if (!slot || !slot->hasItem()) continue;
+    for (int r3 = 0; r3 < cfg.rows; r3++)
+    {
+        for (int c = 0; c < cfg.columns; c++)
+        {
+            int slotId = cfg.startSlotId + r3 * cfg.columns + c;
+            if (!menu) continue;
+            Slot* slot = menu->getSlot(slotId);
+            if (!slot || !slot->hasItem()) continue;
 
-			shared_ptr<ItemInstance> item = slot->getItem();
-			if (item->id >= 256) continue;  // 跳过非方块
+            shared_ptr<ItemInstance> item = slot->getItem();
+            if (item->id >= 256) continue;  // Skip non-blocks
 
-			float gapX = cfg.slotWidth * blockScale;   // 方块实际占用的宽度
-			float gapY = cfg.slotHeight * blockScale * 1.1;  // 方块实际占用的高度
-
-			float sx = cfg.blockX + c * gapX + blockOffsetX;
-			float sy = cfg.blockY + r3 * gapY + blockOffsetY;
+            float sx = cfg.blockX + c * blockGapX;
+            float sy = cfg.blockY + r3 * blockGapY;
+            float blockScale = 2.0f;  
 			float scaleX = (cfg.slotWidth / 16.0f) * blockScale;
 			float scaleY = (cfg.slotHeight / 16.0f) * blockScale;
 
-			if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
+            if (m_pItemRenderer == nullptr) m_pItemRenderer = new ItemRenderer();
 
-			glEnable(GL_RESCALE_NORMAL);
-			glPushMatrix();
-			glTranslatef(0, 0, -200.0f);
-			glRotatef(120, 1, 0, 0);
-			Lighting::turnOn();
-			glPopMatrix();
+            glEnable(GL_RESCALE_NORMAL);
+            glPushMatrix();
+            glTranslatef(0, 0, -2000.0f);
+            glRotatef(120, 1, 0, 0);
+            Lighting::turnOn();
+            glPopMatrix();
 
-			glPushMatrix();
-			glTranslatef(0, 0, -2000.0f);
-			RenderManager.StateSetBlendEnable(true);
-			RenderManager.StateSetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			RenderManager.StateSetBlendFactor(0xffffffff);
-			m_pItemRenderer->renderAndDecorateItem(pMinecraft->font, pMinecraft->textures, item, sx, sy, scaleX, scaleY, 1.0f, false, false, true);
-			glPopMatrix();
+            glPushMatrix();
+            glTranslatef(0, 0, -2000.0f);
+            RenderManager.StateSetBlendEnable(true);
+            RenderManager.StateSetBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            RenderManager.StateSetBlendFactor(0xffffffff);
+            m_pItemRenderer->renderAndDecorateItem(pMinecraft->font, pMinecraft->textures, item, sx, sy, scaleX, scaleY, 1.0f, false, false, true);
+            glPopMatrix();
 
-			Lighting::turnOff();
-			glDisable(GL_RESCALE_NORMAL);
-		}
-	}
+            Lighting::turnOff();
+            glDisable(GL_RESCALE_NORMAL);
+        }
+    }
 }
 
 void UIScene::_customDrawSlotControl(CustomDrawData *region, int iPad, shared_ptr<ItemInstance> item, float fAlpha, bool isFoil, bool bDecorations, bool usingCommandBuffer)

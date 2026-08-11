@@ -217,12 +217,14 @@ protected:
 	void customDrawSlotControl(IggyCustomDrawCallbackRegion *region, int iPad, shared_ptr<ItemInstance> item, float fAlpha, bool isFoil, bool bDecorations);
 	void customDrawSlotControlNoFlash(shared_ptr<ItemInstance> item, float x, float y, float width, float height, float fAlpha, bool isFoil, bool bDecorations);
 	struct SlotGridConfig {
-    	float x, y;
-    	float blockX, blockY;
-    	int columns, rows;
-    	float slotWidth, slotHeight;
-    	int startSlotId;
-	};
+    float x, y;
+    float blockX, blockY;
+    int columns, rows;
+    float slotWidth, slotHeight;
+    int startSlotId;
+    float gapAddI, gapAddB;
+    float gapTimesI, gapTimesB;
+};
 
 	struct VertexPF3TF2CB4 {
 		float x, y, z;
