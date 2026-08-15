@@ -1154,13 +1154,14 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
         if (pos == std::string::npos) return 0;
         return (float)atof(content.c_str() + pos);
     };
-    
+    auto hasValue = [&content](const std::string& key) -> bool {
+        return content.find("\"" + key + "\"") != std::string::npos;
+    };
+
     cfg.x = findValue("x");
     cfg.y = findValue("y");
     cfg.blockX = findValue("blockX");
     cfg.blockY = findValue("blockY");
-    if (cfg.blockX == 0) cfg.blockX = cfg.x;
-    if (cfg.blockY == 0) cfg.blockY = cfg.y;
     if (cfg.blockX == 0) cfg.blockX = cfg.x;
     if (cfg.blockY == 0) cfg.blockY = cfg.y;
     cfg.columns = (int)findValue("columns");
@@ -1168,12 +1169,28 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
     cfg.slotWidth = findValue("slotWidth");
     cfg.slotHeight = findValue("slotHeight");
     cfg.startSlotId = (int)findValue("startSlotId");
-    cfg.gapAddI = findValue("gapAddI");
-    cfg.gapAddB = findValue("gapAddB");
-    cfg.gapTimesI = findValue("gapTimesI");
-    cfg.gapTimesB = findValue("gapTimesB");
-    if (cfg.gapTimesI == 0) cfg.gapTimesI = 1.0f;
-    if (cfg.gapTimesB == 0) cfg.gapTimesB = 1.0f;
+    cfg.gapAddIX = findValue("gapAddIX");
+    cfg.gapAddIY = findValue("gapAddIY");
+    cfg.gapAddBX = findValue("gapAddBX");
+    cfg.gapAddBY = findValue("gapAddBY");
+    cfg.gapTimesIX = findValue("gapTimesIX");
+    cfg.gapTimesIY = findValue("gapTimesIY");
+    cfg.gapTimesBX = findValue("gapTimesBX");
+    cfg.gapTimesBY = findValue("gapTimesBY");
+
+    if (!hasValue("gapAddIX")) cfg.gapAddIX = findValue("gapAddI");
+    if (!hasValue("gapAddIY")) cfg.gapAddIY = findValue("gapAddI");
+    if (!hasValue("gapAddBX")) cfg.gapAddBX = findValue("gapAddB");
+    if (!hasValue("gapAddBY")) cfg.gapAddBY = findValue("gapAddB");
+    if (!hasValue("gapTimesIX")) cfg.gapTimesIX = findValue("gapTimesI");
+    if (!hasValue("gapTimesIY")) cfg.gapTimesIY = findValue("gapTimesI");
+    if (!hasValue("gapTimesBX")) cfg.gapTimesBX = findValue("gapTimesB");
+    if (!hasValue("gapTimesBY")) cfg.gapTimesBY = findValue("gapTimesB");
+
+    if (cfg.gapTimesIX == 0) cfg.gapTimesIX = 1.0f;
+    if (cfg.gapTimesIY == 0) cfg.gapTimesIY = 1.0f;
+    if (cfg.gapTimesBX == 0) cfg.gapTimesBX = 1.0f;
+    if (cfg.gapTimesBY == 0) cfg.gapTimesBY = 1.0f;
     
     if (cfg.columns <= 0 || cfg.rows <= 0) return;
     
@@ -1199,8 +1216,8 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
     }
     
     // Pass 2: Draw 2D items
-    float itemGapX = cfg.slotWidth * cfg.gapTimesI + cfg.gapAddI;
-    float itemGapY = cfg.slotHeight * cfg.gapTimesI + cfg.gapAddI;
+    float itemGapX = cfg.slotWidth * cfg.gapTimesIX + cfg.gapAddIX;
+    float itemGapY = cfg.slotHeight * cfg.gapTimesIY + cfg.gapAddIY;
     for (int r2 = 0; r2 < cfg.rows; r2++)
     {
         for (int c = 0; c < cfg.columns; c++)
@@ -1237,8 +1254,8 @@ void UIScene::RenderSlotGridJSON(const std::string& jsonPath, AbstractContainerM
     }
 
     // Pass 3: Draw 3D blocks separately
-    float blockGapX = cfg.slotWidth * cfg.gapTimesB + cfg.gapAddB;
-    float blockGapY = cfg.slotHeight * cfg.gapTimesB + cfg.gapAddB;
+    float blockGapX = cfg.slotWidth * cfg.gapTimesBX + cfg.gapAddBX;
+    float blockGapY = cfg.slotHeight * cfg.gapTimesBY + cfg.gapAddBY;
 
     for (int r3 = 0; r3 < cfg.rows; r3++)
     {

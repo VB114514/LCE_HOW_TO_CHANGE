@@ -3,7 +3,7 @@ title Git One-Click Commit to test branch
 
 set "project_path=%~dp0"
 set "repo_url=https://github.com/VB114514/LCE_HOW_TO_CHANGE"
-set "branch_name=S_26W05A_PRE"
+set "branch_name=S_26W05A"
 
 echo ========================================
 echo   Git One-Click Commit to %branch_name%

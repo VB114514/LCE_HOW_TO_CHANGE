@@ -222,8 +222,10 @@ protected:
     int columns, rows;
     float slotWidth, slotHeight;
     int startSlotId;
-    float gapAddI, gapAddB;
-    float gapTimesI, gapTimesB;
+    float gapAddIX, gapAddIY;
+    float gapAddBX, gapAddBY;
+    float gapTimesIX, gapTimesIY;
+    float gapTimesBX, gapTimesBY;
 };
 
 	struct VertexPF3TF2CB4 {
